@@ -1,0 +1,98 @@
+#+TITLE: Start here
+
+This is a 36-week path into hardware engineering for a software engineer. It
+moves from Ohm's law to a printed circuit board you design yourself, and ends
+by building a CPU out of NAND gates in a simulator. Every week pairs a concept
+with a build, and every build starts with a prediction you check with a meter.
+
+The plan assumes about 3–4 hours a week. Weeks are milestones, not deadlines.
+If a week takes two, it takes two.
+
+* How to use this repo
+
+The Org files in =plan/= are the record. The site is generated from them on
+every push, so the files always win.
+
+- Each week is a top-level heading with a TODO state. Change it to =DOING=
+  when you start (=C-c C-t=) and =DONE= when you finish. Optional weeks can be
+  marked =SKIPPED=.
+- Tick build items as you go (=C-c C-c= on a checkbox). The =[/]= counter on
+  each =Build= heading updates itself.
+- Write your notes under the week's =Notes= heading. Short is fine.
+- Commit and push. The dashboard updates in a minute or two.
+- From your phone, the GitHub mobile app can edit a file and commit it, which
+  is enough for ticking a box or jotting a note at the bench.
+
+To preview the site locally: =make site=, then open =_site/index.html=.
+=make check= confirms the files still have the structure the site expects.
+
+* A week's rhythm
+
+| Time          | Activity                                                       |
+|---------------+----------------------------------------------------------------|
+| 30–45 minutes | Read or watch the Learn material                               |
+| 60–90 minutes | Build and test the circuit                                     |
+| 30 minutes    | Change one thing, predict what will happen, then test          |
+| 15–30 minutes | Record schematic, measurements, code, and what surprised you   |
+
+* The four notes
+
+Every week has the same four note headings. They turn a tutorial into
+something you learned.
+
+1. *Expected*: what you predicted before powering it up.
+2. *Measured*: what the meter, the scope, or the program actually showed.
+3. *Different and why*: where those disagreed and your best explanation.
+4. *Next*: what you would change or try next.
+
+A habit that pays off: after finishing a build, put the guide away and rebuild
+it from your own schematic and notes.
+
+* The board
+
+The plan uses the *Raspberry Pi Pico 2 WH*: the Pico 2 W with headers already
+soldered. It has the RP2350 chip (two Arm Cortex-M33 cores and two RISC-V
+cores), Wi-Fi and Bluetooth, and Raspberry Pi's documentation, which is among
+the best for any microcontroller. You start in MicroPython and move to C with
+the official SDK.
+
+- [[https://www.raspberrypi.com/documentation/microcontrollers/pico-series.html][Pico-series documentation]]
+- [[https://datasheets.raspberrypi.com/picow/pico-2-w-datasheet.pdf][Pico 2 W datasheet]] (pinout, power, electrical limits)
+- [[https://datasheets.raspberrypi.com/rp2350/rp2350-datasheet.pdf][RP2350 datasheet]] (the chip itself; you will dip into it from Phase 4)
+
+* Tools and when to buy them
+
+There is no kit to buy up front. Each week lists the parts it needs. These are
+the tools, in the order you need them:
+
+| When     | Tool                                         | Why                                                        |
+|----------+----------------------------------------------+------------------------------------------------------------|
+| Week 1   | Digital multimeter (auto-ranging, with continuity beep) | Every build starts with a measurement            |
+| Week 1   | Two full-size breadboards and jumper wires   | Solderless prototyping                                     |
+| Week 1   | Pico 2 WH and a USB cable that carries data  | Power source in Phase 1, microcontroller from Phase 2      |
+| Week 1   | Resistor, LED, and ceramic capacitor assortments | Cheap, and you will use them all year                |
+| Week 16  | Raspberry Pi Debug Probe                     | Breakpoints and stepping on the Pico, via SWD and GDB      |
+| Week 21  | USB logic analyzer (8-channel, sigrok-compatible) | Watch I²C, SPI, and UART on the wire                  |
+| Week 27  | Soldering iron (a Pinecil is a good choice), solder, flux, brass tip cleaner | Soldering and PCB assembly |
+| Later    | Oscilloscope                                 | Optional. Seeing analog signals over time; buy when you miss it |
+
+* Safety and good habits
+
+- Everything here runs from USB at 5 V or less. Keep it that way until Phase 6
+  covers power properly. Mains voltage is out of scope for the whole plan.
+- Disconnect power before changing wiring.
+- The Pico's GPIO pins are *3.3 V*. Putting 5 V on a GPIO pin can damage the
+  chip. Check every part's voltage before connecting it.
+- A single GPIO pin should source or sink only a few milliamps. Anything
+  bigger (motors, relays, long LED strips) goes through a transistor, which
+  you learn in week 7.
+- Solder in a ventilated space, wash your hands afterwards, and keep the iron
+  in its stand.
+
+* Books and courses used throughout
+
+- Charles Platt, /Make: Electronics/ (3rd edition). Hands-on, experiment-led.
+- Paul Scherz and Simon Monk, /Practical Electronics for Inventors/. The reference to look things up in.
+- [[https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/][MIT OCW 6.002 Circuits and Electronics]]. Undergraduate theory, used as a reference.
+- [[https://learn.sparkfun.com/tutorials][SparkFun tutorials]]. Short, practical explainers.
+- [[https://www.nand2tetris.org/][Nand2Tetris]]. Phase 8.

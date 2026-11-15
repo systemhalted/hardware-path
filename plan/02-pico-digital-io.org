@@ -1,0 +1,227 @@
+#+TITLE: Phase 2: The Pico and digital I/O
+#+TODO: TODO DOING | DONE SKIPPED
+
+Weeks 5–9. By the end you can connect inputs and outputs to the Pico, drive
+loads that need more than a GPIO pin can give, and explain how your program
+and the hardware interact. The language is MicroPython, so experiments are
+quick and the attention stays on the hardware.
+
+* TODO Week 5: Microcontrollers, firmware, and GPIO
+:PROPERTIES:
+:WEEK: 5
+:CUSTOM_ID: week-05
+:END:
+** Learn
+A microcontroller is a whole small computer on one chip: CPU, RAM, flash, and
+peripherals. It has no operating system unless you put one there. MicroPython
+is firmware: a program you flash onto the Pico that runs a Python interpreter
+on the chip itself. Your laptop only sends it code over USB. GPIO
+(general-purpose input/output) pins are the chip's connection to the world:
+each one can be set high (3.3 V) or low (0 V), or read as an input.
+
+- Raspberry Pi: [[https://www.raspberrypi.com/documentation/microcontrollers/micropython.html][MicroPython on the Pico]] (flashing the UF2 file)
+- [[https://datasheets.raspberrypi.com/pico/raspberry-pi-pico-python-sdk.pdf][Raspberry Pi Pico Python SDK]] (PDF), chapters 1–3
+- [[https://docs.micropython.org/en/latest/rp2/quickref.html][MicroPython quick reference for the RP2]]
+- [[https://thonny.org/][Thonny]] editor, or =mpremote= from the command line
+** Build [0/5]
+- [ ] Flash the MicroPython UF2 for the Pico 2 W by holding BOOTSEL while plugging in
+- [ ] Open a REPL (Thonny or =mpremote=) and turn the onboard LED on and off by hand with =machine.Pin("LED", machine.Pin.OUT)=
+- [ ] Write =main.py= to blink it, save it to the Pico, and unplug from the laptop and power it from a phone charger to prove it runs standalone
+- [ ] Change the blink timing and explain which parts run on the Pico and which on the laptop
+- [ ] Read the Pico 2 W pinout and list which pins are GPIO, power, ground, and ADC
+** Parts
+- Pico 2 WH and data USB cable
+- Any USB phone charger
+** Checkpoint
+You unplug the Pico from the laptop and power it from a phone charger. Why
+does the LED keep blinking, and what would stop working?
+#+begin_details
+#+html: <summary>Check your answer</summary>
+=main.py= is stored in the Pico's flash, and the interpreter runs it at boot,
+so the program needs nothing from the laptop. What stops is anything that
+went over USB serial: the REPL, =print()= output you were watching, and
+uploading new code.
+#+end_details
+** Notes
+*** Expected
+*** Measured
+*** Different and why
+*** Next
+
+* TODO Week 6: Digital output and pin limits
+:PROPERTIES:
+:WEEK: 6
+:CUSTOM_ID: week-06
+:END:
+** Learn
+A GPIO output is a tiny switch that connects the pin to 3.3 V or to ground.
+It can only supply a little current: the RP2350 lets you configure the drive
+strength (2, 4, 8, or 12 mA), with a total limit across all pins. Driving an
+LED through a resistor sits comfortably inside those limits. Driving a motor
+does not. Reading the electrical-characteristics section of a datasheet is
+how you find these numbers, and it is a skill you will use for the rest of
+the plan.
+
+- [[https://datasheets.raspberrypi.com/picow/pico-2-w-datasheet.pdf][Pico 2 W datasheet]]: the pinout and power sections
+- [[https://datasheets.raspberrypi.com/rp2350/rp2350-datasheet.pdf][RP2350 datasheet]]: search for "drive strength" in the GPIO chapter and the electrical specifications table
+- SparkFun: [[https://learn.sparkfun.com/tutorials/logic-levels][Logic levels]]
+** Build [0/5]
+- [ ] Find the GPIO output drive-strength options and the default in the RP2350 datasheet; write them in your notes
+- [ ] Connect an external LED with a resistor to a GPIO pin and blink it from code
+- [ ] Measure the pin's voltage when high and when low, with the LED connected and without
+- [ ] Build a traffic light (red, amber, green) with realistic timing
+- [ ] Calculate the total current with all three LEDs on and compare with the chip's limits
+** Parts
+- Red, yellow, and green LEDs
+- 220 Ω or 330 Ω resistors
+** Checkpoint
+Why does the pin's "high" voltage drop slightly when the LED is connected, and
+why would it drop much further if you tried to drive a small motor directly?
+#+begin_details
+#+html: <summary>Check your answer</summary>
+The output transistor inside the chip has some resistance, so the voltage
+across it rises as more current flows. That leaves less at the pin. A motor
+wants hundreds of milliamps, far more than the pin can supply. The voltage
+would collapse, the motor wouldn't run, and you'd risk damaging the pin.
+That's the problem week 7 solves.
+#+end_details
+** Notes
+*** Expected
+*** Measured
+*** Different and why
+*** Next
+
+* TODO Week 7: Transistors and MOSFETs as switches
+:PROPERTIES:
+:WEEK: 7
+:CUSTOM_ID: week-07
+:END:
+** Learn
+A transistor lets a small signal control a large current. A bipolar (NPN)
+transistor is controlled by base current: you size a base resistor so the
+transistor is fully on ("saturated"). A logic-level N-channel MOSFET is
+controlled by gate voltage and draws almost no steady current from the pin.
+Use it as a "low-side switch" between the load and ground. Motors and relay
+coils are inductors: when you switch them off, they kick back a voltage spike
+that can destroy the transistor. A flyback diode across the load gives that
+energy somewhere safe to go. This week explains why every real project has a
+transistor somewhere.
+
+- SparkFun: [[https://learn.sparkfun.com/tutorials/transistors][Transistors]] (focus on "Applications I: switches")
+- Platt, /Make: Electronics/, the transistor experiments
+- Search a part datasheet for "V_GS(th)" and "R_DS(on) at V_GS = 2.5 V" to see why "logic-level" matters at 3.3 V
+** Build [0/5]
+- [ ] Switch an LED through an NPN transistor (2N2222 or BC547) from a GPIO pin; calculate the base resistor first
+- [ ] Measure the voltage across the transistor (collector to emitter) when on, and explain what "saturated" means from that number
+- [ ] Drive a small DC motor from the 5 V =VBUS= pin through a logic-level MOSFET, with a flyback diode across the motor
+- [ ] Find the MOSFET's gate threshold and on-resistance in its datasheet and check it is fully on at 3.3 V
+- [ ] Explain in your notes what the flyback diode protects and what happens without it (don't test this one)
+** Parts
+- NPN transistors: 2N2222 or BC547
+- Logic-level N-channel MOSFET rated for 3.3 V gate drive (e.g. IRLZ44N or a small AO3400 on a breakout)
+- Diodes: 1N4001 (flyback) and 1N4148
+- Small 3–6 V DC motor
+- Resistors: 1 kΩ, 10 kΩ (gate pull-down)
+** Checkpoint
+Why do you put a 10 kΩ resistor from the MOSFET's gate to ground, and why does
+the flyback diode go across the motor "backwards"?
+#+begin_details
+#+html: <summary>Check your answer</summary>
+The pull-down holds the gate at 0 V while the Pico is booting or the pin is
+an input. Otherwise the gate floats and the motor can twitch on at random.
+The diode is reverse-biased in normal operation, so it carries no current.
+When the MOSFET switches off, the motor's inductance drives current onward
+and reverses the voltage across the motor. The diode then conducts and lets
+that current circulate harmlessly instead of spiking the MOSFET.
+#+end_details
+** Notes
+*** Expected
+*** Measured
+*** Different and why
+*** Next
+
+* TODO Week 8: Digital input, pull-ups, and button bounce
+:PROPERTIES:
+:WEEK: 8
+:CUSTOM_ID: week-08
+:END:
+** Learn
+An input pin reads whether a voltage is closer to 3.3 V or to 0 V. A pin
+connected to nothing "floats" and reads random values, because it picks up
+noise. A pull-up or pull-down resistor gives it a defined default. The Pico
+has built-in ones you enable in code. Mechanical buttons don't switch
+cleanly: the contacts bounce for a few milliseconds, so one press can look
+like several. Debouncing in hardware (an RC filter) or in software (ignore
+changes for a short time) fixes it.
+
+- SparkFun: [[https://learn.sparkfun.com/tutorials/pull-up-resistors][Pull-up resistors]]
+- Jack Ganssle: [[https://www.ganssle.com/debouncing.htm][A guide to debouncing]] (part 1 is enough for now)
+- [[https://docs.micropython.org/en/latest/rp2/quickref.html][MicroPython RP2 quick reference]]: the =Pin= section on =PULL_UP=
+** Build [0/5]
+- [ ] Read an input pin with nothing connected, printing its value in a loop, and watch it float when you touch the wire
+- [ ] Wire a button to ground and use the internal pull-up; confirm pressed reads 0 and released reads 1
+- [ ] Count presses with a loop that detects transitions; press 20 times and compare the count
+- [ ] Add software debouncing and repeat the 20-press test
+- [ ] Make the button toggle an LED on each press, not just while held
+** Parts
+- Tactile buttons
+- LEDs and resistors
+** Checkpoint
+Why should an input pin never be left floating, and what is one software way
+to handle button bounce?
+#+begin_details
+#+html: <summary>Check your answer</summary>
+A floating input has no defined voltage. It picks up nearby electrical noise
+and reads random highs and lows, which your program sees as phantom presses.
+One software fix: after detecting a change, ignore further changes for about
+20–50 ms, or only accept a new state after it has been stable for that long.
+#+end_details
+** Notes
+*** Expected
+*** Measured
+*** Different and why
+*** Next
+
+* TODO Week 9: State and timing: a reaction-time game
+:PROPERTIES:
+:WEEK: 9
+:CUSTOM_ID: week-09
+:END:
+** Learn
+Embedded programs usually loop forever, so you can't block on =sleep()= while
+also watching a button. The fix is to track state and time explicitly: keep
+a variable for what phase you're in, and use a monotonic millisecond clock
+(=time.ticks_ms()= with =time.ticks_diff()=) to decide when to move on. This is
+the same idea as an event loop in software, made visible by the hardware.
+
+- [[https://docs.micropython.org/en/latest/library/time.html][MicroPython =time= module]]: =ticks_ms=, =ticks_diff=, and why they wrap
+- Use your week 8 notes on debouncing
+** Build [0/5]
+- [ ] Sketch the game's states (waiting, get ready, go, result) and transitions on paper first
+- [ ] After a random delay, light the LED; measure the time until the button press, and print it
+- [ ] Handle a press before the LED lights as a false start
+- [ ] Run the game without any blocking =sleep()= longer than a few milliseconds
+- [ ] Add a "best time" that survives between rounds (but not power cycles)
+** Parts
+- One LED, one button, resistors
+** Checkpoint
+Why use =time.ticks_diff(now, start)= instead of =now - start=?
+#+begin_details
+#+html: <summary>Check your answer</summary>
+The tick counter is a fixed-width number that wraps back to zero after its
+maximum. Plain subtraction gives a wrong (even negative) result across a wrap.
+=ticks_diff= does the arithmetic modulo the counter's range, so short
+intervals are correct even when the counter wraps between the two readings.
+#+end_details
+** Notes
+*** Expected
+*** Measured
+*** Different and why
+*** Next
+
+* Phase review
+- Can you explain what runs where when MicroPython code executes on the Pico?
+- Can you find a GPIO pin's current limit in a datasheet?
+- Can you drive a motor safely from a GPIO pin, and explain each part you added?
+- Can you explain why inputs need pull-ups and how to debounce a button?
+- Can you write a non-blocking loop that handles timing and input together?

@@ -1,7 +1,7 @@
 EMACS ?= emacs
 BATCH = $(EMACS) -Q --batch -L .
 
-.PHONY: test check site clean
+.PHONY: test check site clean links
 
 test:
 	$(BATCH) -l test/hp-test.el -f ert-run-tests-batch-and-exit
@@ -14,3 +14,6 @@ site:
 
 clean:
 	rm -rf _site
+
+links:
+	scripts/check-links.sh

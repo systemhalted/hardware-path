@@ -1,0 +1,182 @@
+#+TITLE: Phase 1: Electronics foundations
+#+TODO: TODO DOING | DONE SKIPPED
+
+Weeks 1–4. By the end you can build a simple circuit, predict its behavior on
+paper, and use a multimeter to find out where you were wrong. No code yet: the
+Pico is only a 3.3 V power source in this phase, powered from your laptop's USB.
+
+* TODO Week 1: Voltage, current, resistance, and the breadboard
+:PROPERTIES:
+:WEEK: 1
+:CUSTOM_ID: week-01
+:END:
+** Learn
+Voltage is the push, current is the flow, resistance is what limits the flow.
+Ohm's law (V = I × R) ties them together, and power (P = V × I) tells you how
+much heat a part has to get rid of. Almost every calculation this year starts
+from these two equations. The breadboard is the other foundation: knowing
+which holes are connected saves hours of debugging.
+
+- SparkFun: [[https://learn.sparkfun.com/tutorials/voltage-current-resistance-and-ohms-law][Voltage, current, resistance, and Ohm's law]]
+- SparkFun: [[https://learn.sparkfun.com/tutorials/how-to-use-a-breadboard][How to use a breadboard]]
+- SparkFun: [[https://learn.sparkfun.com/tutorials/how-to-use-a-multimeter][How to use a multimeter]]
+- Platt, /Make: Electronics/, chapter 1
+** Build [0/5]
+- [ ] Draw the breadboard's internal connections from memory, then check them with the meter's continuity mode
+- [ ] Read five resistors' color codes, write down the values, then measure them
+- [ ] Note how far each measured value is from the marked value and compare with its tolerance band
+- [ ] Find the Pico's =3V3(OUT)= and =GND= pins on the pinout and measure the voltage between them with the Pico on USB
+- [ ] Use Ohm's law to predict the current through a 1 kΩ resistor across 3.3 V; measure it with the meter in series
+** Parts
+- Multimeter
+- Breadboard and jumper wires
+- Resistor assortment
+- Pico 2 WH and a data USB cable
+** Checkpoint
+Your meter reads 3.28 V across a resistor and 3.3 mA through it. What is the
+resistance, and how much power is the resistor turning into heat?
+#+begin_details
+#+html: <summary>Check your answer</summary>
+R = V / I = 3.28 / 0.0033 ≈ 994 Ω, so a 1 kΩ resistor within tolerance.
+P = V × I = 3.28 × 0.0033 ≈ 10.8 mW, far below a typical 250 mW (¼ W) rating.
+#+end_details
+** Notes
+*** Expected
+*** Measured
+*** Different and why
+*** Next
+
+* TODO Week 2: LEDs, polarity, and current limiting
+:PROPERTIES:
+:WEEK: 2
+:CUSTOM_ID: week-02
+:END:
+** Learn
+An LED is a diode: current flows one way only, and once it conducts it drops
+a roughly fixed forward voltage (about 1.8–2.2 V for red, about 3 V for blue or
+white). It has almost no resistance of its own, so without a series resistor
+the current is limited only by the source, and the LED burns out. Sizing that
+resistor is the first real design calculation you will make:
+R = (V_supply − V_forward) / I_desired.
+
+- SparkFun: [[https://learn.sparkfun.com/tutorials/light-emitting-diodes-leds][Light-emitting diodes]]
+- SparkFun: [[https://learn.sparkfun.com/tutorials/diodes][Diodes]]
+- Platt, /Make: Electronics/, the LED experiments in chapter 1
+** Build [0/5]
+- [ ] Calculate a resistor for a red LED at about 10 mA from 3.3 V, and pick the nearest standard value at or above it
+- [ ] Build the circuit and confirm the LED lights; then reverse the LED and note what happens
+- [ ] Measure the voltage across the LED and across the resistor; check they add up to the supply
+- [ ] Measure the actual current and compare it with your prediction
+- [ ] Swap in a resistor twice as large; predict the new current and brightness, then measure
+** Parts
+- Red, green, and blue LEDs (5 mm)
+- Resistors: 100 Ω, 150 Ω, 220 Ω, 330 Ω, 1 kΩ
+** Checkpoint
+A blue LED has a forward voltage of 3.0 V. Can you light it to a useful
+brightness from 3.3 V with a 220 Ω resistor? What current would you expect?
+#+begin_details
+#+html: <summary>Check your answer</summary>
+Only dimly. Just 0.3 V is left for the resistor, so I ≈ 0.3 / 220 ≈ 1.4 mA.
+It will glow, but modern LEDs are visible at 1–2 mA. For more current you'd
+use a smaller resistor, or a higher supply such as the 5 V =VBUS= pin with a
+resistor recalculated for 5 V.
+#+end_details
+** Notes
+*** Expected
+*** Measured
+*** Different and why
+*** Next
+
+* TODO Week 3: Series, parallel, and voltage dividers
+:PROPERTIES:
+:WEEK: 3
+:CUSTOM_ID: week-03
+:END:
+** Learn
+In series, resistances add and the same current flows through each. In
+parallel, the voltage is the same across each and the currents add. A voltage
+divider is two resistors in series, with the output taken from the middle:
+V_out = V_in × R2 / (R1 + R2). Dividers turn up everywhere: reading sensors,
+scaling a voltage down for a 3.3 V input, and setting reference levels. They
+also teach the idea of loading: what you connect to the output changes it.
+
+- SparkFun: [[https://learn.sparkfun.com/tutorials/series-and-parallel-circuits][Series and parallel circuits]]
+- SparkFun: [[https://learn.sparkfun.com/tutorials/voltage-dividers][Voltage dividers]]
+- MIT 6.002, lecture 2 (basic circuit analysis), as a deeper reference
+** Build [0/5]
+- [ ] Put three resistors in series, predict the total resistance, then measure it
+- [ ] Put the same three in parallel, predict, then measure
+- [ ] Build a divider from two 10 kΩ resistors on 3.3 V; predict the output, then measure
+- [ ] Change R2 to 4.7 kΩ; predict and measure again, and explain the change
+- [ ] Put a 10 kΩ resistor across R2 (a "load") and explain why the output drops
+** Parts
+- Resistors: 1 kΩ, 4.7 kΩ, 10 kΩ (several of each)
+** Checkpoint
+A divider with R1 = 10 kΩ and R2 = 10 kΩ on 3.3 V gives 1.65 V. You connect a
+10 kΩ load across R2. What is the new output, and what does this tell you
+about choosing divider values?
+#+begin_details
+#+html: <summary>Check your answer</summary>
+R2 in parallel with the load is 5 kΩ, so V_out = 3.3 × 5 / (10 + 5) = 1.1 V.
+A divider only holds its voltage when the load's resistance is much larger
+than the divider's (about ten times or more). Pick divider resistors much
+smaller than the load, or buffer the output.
+#+end_details
+** Notes
+*** Expected
+*** Measured
+*** Different and why
+*** Next
+
+* TODO Week 4: Switches, ground, continuity, and schematics
+:PROPERTIES:
+:WEEK: 4
+:CUSTOM_ID: week-04
+:END:
+** Learn
+A schematic is the circuit's source code: it says what connects to what,
+not where parts sit. Learn the symbols for resistors, LEDs, switches,
+batteries, and ground. Ground is simply the reference point all voltages are
+measured from; every part of a circuit that talks to another part needs a
+shared ground. Switches come in types (SPST, SPDT, momentary, latching), and a
+four-legged tactile button has pins that are connected in pairs, which trips
+up nearly everyone once.
+
+- SparkFun: [[https://learn.sparkfun.com/tutorials/how-to-read-a-schematic][How to read a schematic]]
+- SparkFun: [[https://learn.sparkfun.com/tutorials/button-and-switch-basics][Button and switch basics]]
+- Platt, /Make: Electronics/, the switch experiments in chapter 2
+** Build [0/5]
+- [ ] Use continuity mode to work out which legs of a tactile button are always connected and which close when pressed
+- [ ] Draw a schematic of a button that turns on an LED, before building anything
+- [ ] Build it from your schematic only
+- [ ] Add a second button so that either button lights the LED; draw it first
+- [ ] Change it so both buttons must be pressed; explain the difference in schematic terms (parallel vs series)
+** Parts
+- Tactile push buttons (6 mm, four legs)
+- LEDs and resistors from earlier weeks
+** Checkpoint
+Draw (in your notes) an LED circuit without copying a diagram. Then answer:
+your LED doesn't light. In what order would you check things, and which meter
+mode do you use for each check?
+#+begin_details
+#+html: <summary>Check your answer</summary>
+A sensible order, with power on unless noted:
+1. Supply voltage at the breadboard rails (DC volts).
+2. Voltage across the LED and across the resistor (DC volts). All the supply
+   across the LED means it's reversed or open. All of it across the resistor
+   means the LED is shorted.
+3. With power off, check each connection with continuity mode, especially
+   that the parts sit in different breadboard rows.
+4. The LED's polarity: the long leg and the round side go to positive.
+#+end_details
+** Notes
+*** Expected
+*** Measured
+*** Different and why
+*** Next
+
+* Phase review
+- Can you calculate the resistor for any LED from its datasheet's forward voltage and current?
+- Can you predict a voltage divider's output, and say when a load will spoil it?
+- Can you draw a schematic before building, and build from it?
+- Can you find a wiring fault with a meter instead of by staring at it?

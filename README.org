@@ -1,0 +1,27 @@
+#+TITLE: Hardware Path
+
+A 36-week, project-based path into hardware engineering, tracked in Org.
+It runs from Ohm's law, through microcontrollers and embedded C, to a PCB
+designed in KiCad and a CPU built from NAND gates.
+
+The site is at https://systemhalted.github.io/hardware-path/ and is rebuilt
+from the Org files on every push.
+
+* Layout
+
+- =plan/00-start-here.org=: how to use this, tools, safety.
+- =plan/01-…08-*.org=: one file per phase, one heading per week.
+- =plan/09-capstone.org=: the StarFest conditions monitor.
+- =publish.el=: progress counting, structure checks, and the site build.
+
+* Logging progress
+
+Set a week to =DOING= or =DONE= with =C-c C-t=, tick build items with
+=C-c C-c=, write notes under the week's =Notes= heading, commit, push.
+
+* Commands
+
+- =make site=: build the site into =_site/= with your Emacs.
+- =make check=: confirm every phase file has the expected structure.
+- =make test=: run the ERT tests for =publish.el=.
+- =make links=: check that every link in the plan resolves.
