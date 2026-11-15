@@ -109,18 +109,19 @@ transistor somewhere.
 
 - SparkFun: [[https://learn.sparkfun.com/tutorials/transistors][Transistors]] (focus on "Applications I: switches")
 - Platt, /Make: Electronics/, the transistor experiments
-- Search a part datasheet for "V_GS(th)" and "R_DS(on) at V_GS = 2.5 V" to see why "logic-level" matters at 3.3 V
+- Search a MOSFET datasheet for "V_GS(th)" and for the gate voltages R_DS(on) is specified at. The threshold is where the MOSFET barely starts to conduct; only an R_DS(on) figure at 2.5 V or 3.3 V guarantees it is fully on from a Pico pin. The popular IRLZ44N, for example, is only specified from 4 V up
 ** Build [0/5]
 - [ ] Switch an LED through an NPN transistor (2N2222 or BC547) from a GPIO pin; calculate the base resistor first
 - [ ] Measure the voltage across the transistor (collector to emitter) when on, and explain what "saturated" means from that number
-- [ ] Drive a small DC motor from the 5 V =VBUS= pin through a logic-level MOSFET, with a flyback diode across the motor
-- [ ] Find the MOSFET's gate threshold and on-resistance in its datasheet and check it is fully on at 3.3 V
+- [ ] Drive a small DC motor from a separate supply (a 4×AA pack, about 6 V) through the MOSFET, with a flyback diode across the motor, a 100 µF capacitor across the motor supply, and the supply's ground joined to the Pico's ground. Don't run motors from the Pico's =VBUS=: startup and stall current can brown out the Pico or trip the laptop's USB port
+- [ ] In the MOSFET's datasheet, find the gate threshold and the gate voltage its on-resistance is guaranteed at, and confirm it is fully on at 3.3 V
 - [ ] Explain in your notes what the flyback diode protects and what happens without it (don't test this one)
 ** Parts
 - NPN transistors: 2N2222 or BC547
-- Logic-level N-channel MOSFET rated for 3.3 V gate drive (e.g. IRLZ44N or a small AO3400 on a breakout)
+- N-channel MOSFET with R_DS(on) specified at V_GS = 2.5 V, such as AO3400A or Si2302. These are tiny SOT-23 parts: buy them already mounted on a breakout board, since soldering comes in week 27
 - Diodes: 1N4001 (flyback) and 1N4148
 - Small 3–6 V DC motor
+- 4×AA battery holder (separate motor supply) and a 100 µF electrolytic capacitor
 - Resistors: 1 kΩ, 10 kΩ (gate pull-down)
 ** Checkpoint
 Why do you put a 10 kΩ resistor from the MOSFET's gate to ground, and why does

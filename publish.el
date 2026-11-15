@@ -10,6 +10,7 @@
 (require 'ox-publish)
 (require 'cl-lib)
 (require 'subr-x)
+(require 'seq)
 
 (defvar hp-plan-dir "plan/"
   "Directory holding the plan's Org files.")
@@ -108,12 +109,15 @@ Keys: :file :title :week :id :state :optional :build-done :build-total
 
 (defun hp-phase-summary (file)
   "Return a plist summarizing FILE: :file :title :done :total :weeks.
-Skipped weeks are left out of :total."
+Optional weeks marked SKIPPED are left out of :total; a skipped mandatory
+week still counts as not done."
   (let ((weeks (hp-collect-weeks file)))
     (list :file file
           :title (or (hp--title (hp--parse file)) (file-name-base file))
           :done (cl-count "DONE" weeks :key (lambda (w) (plist-get w :state)) :test #'equal)
-          :total (cl-count-if-not (lambda (w) (equal (plist-get w :state) "SKIPPED")) weeks)
+          :total (cl-count-if-not (lambda (w) (and (equal (plist-get w :state) "SKIPPED")
+                                                   (plist-get w :optional)))
+                                  weeks)
           :weeks weeks)))
 
 (defun hp-current-week (weeks)
@@ -143,6 +147,11 @@ Skipped weeks are left out of :total."
                 (push (concat label ": " (apply #'format fmt args)) errors)))
       (unless (org-element-property :todo-keyword h)
         (err "heading has no TODO state"))
+      (when (and (equal (org-element-property :todo-keyword h) "SKIPPED")
+                 (not (equal (org-element-property :OPTIONAL h) "t")))
+        (err "SKIPPED is only for weeks with :OPTIONAL: t"))
+      (unless (string-prefix-p (format "Week %s:" n) (hp--heading-name h))
+        (err "heading says \"%s\" but :WEEK: is %s" (hp--heading-name h) n))
       (unless (equal (org-element-property :CUSTOM_ID h)
                      (format "week-%02d" (string-to-number n)))
         (err "CUSTOM_ID must be week-%02d" (string-to-number n)))
@@ -184,12 +193,30 @@ Skipped weeks are left out of :total."
       (push (concat "missing \"#+TODO: " hp-todo-line "\"") errors))
     (unless (hp--weeks tree)
       (push "no week headings" errors))
+    (dolist (h tops)
+      (when (and (string-match-p "\\`Week [0-9]+" (hp--heading-name h))
+                 (not (org-element-property :WEEK h)))
+        (push (format "heading \"%s\" has no :WEEK: property" (hp--heading-name h)) errors)))
     (unless (and last-top
                  (equal (hp--heading-name last-top) "Phase review")
                  (not (org-element-property :todo-keyword last-top)))
       (push "last top-level heading must be \"Phase review\" with no TODO state" errors))
     (append (nreverse errors)
             (mapcan #'hp--check-week (hp--weeks tree)))))
+
+(defun hp-check-sequence (files)
+  "Return errors if the weeks across FILES are not exactly 1..N, once each."
+  (let* ((numbers (mapcar (lambda (w) (plist-get w :week))
+                          (mapcan #'hp-collect-weeks files)))
+         errors)
+    (dolist (n (seq-uniq numbers))
+      (when (> (cl-count n numbers) 1)
+        (push (format "duplicate week %d" n) errors)))
+    (when numbers
+      (dotimes (i (apply #'max numbers))
+        (unless (memq (1+ i) numbers)
+          (push (format "missing week %d" (1+ i)) errors))))
+    (nreverse errors)))
 
 (defun hp-check-all ()
   "Check every phase file; exit non-zero on any error."
@@ -202,6 +229,9 @@ Skipped weeks are left out of :total."
       (dolist (e (hp-check-file f))
         (setq failed t)
         (message "%s: %s" (file-name-nondirectory f) e)))
+    (dolist (e (hp-check-sequence files))
+      (setq failed t)
+      (message "plan: %s" e))
     (if failed
         (kill-emacs 1)
       (message "OK: %d phase files" (length files)))))

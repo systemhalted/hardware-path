@@ -89,4 +89,36 @@
     (should (string-match-p (regexp-quote "Use R &amp; C") html))
     (should-not (string-match-p (regexp-quote "<B>") html))))
 
+(defun hp-test-variant (from to)
+  "Write a copy of the sample fixture with FROM replaced by TO; return its path."
+  (let ((file (make-temp-file "hp-variant" nil ".org")))
+    (with-temp-file file
+      (insert-file-contents (hp-test-fixture "phase-sample.org"))
+      (goto-char (point-min))
+      (should (search-forward from nil t))
+      (replace-match to t t))
+    file))
+
+(ert-deftest hp-skipped-mandatory-week-still-counts ()
+  (let* ((file (hp-test-variant "* TODO Week 2: Second week" "* SKIPPED Week 2: Second week"))
+         (s (hp-phase-summary file)))
+    (should (= (plist-get s :total) 2))
+    (should (string-match-p "SKIPPED" (string-join (hp-check-file file) "\n")))))
+
+(ert-deftest hp-check-week-number-mismatch ()
+  (let ((file (hp-test-variant ":WEEK: 2\n:CUSTOM_ID: week-02" ":WEEK: 7\n:CUSTOM_ID: week-07")))
+    (should (string-match-p "Week 2" (string-join (hp-check-file file) "\n")))))
+
+(ert-deftest hp-check-week-heading-without-property ()
+  (let ((file (hp-test-variant ":WEEK: 2\n" "")))
+    (should (string-match-p ":WEEK:" (string-join (hp-check-file file) "\n")))))
+
+(ert-deftest hp-check-sequence-duplicates-and-gaps ()
+  (let ((sample (hp-test-fixture "phase-sample.org")))
+    (should-not (hp-check-sequence (list sample)))
+    (should (string-match-p "duplicate" (string-join (hp-check-sequence (list sample sample)) "\n")))
+    (let ((gap (hp-test-variant ":WEEK: 2\n:CUSTOM_ID: week-02" ":WEEK: 4\n:CUSTOM_ID: week-04")))
+      (should (string-match-p "missing week 2"
+                              (string-join (hp-check-sequence (list gap)) "\n"))))))
+
 ;;; hp-test.el ends here

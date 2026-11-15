@@ -66,9 +66,10 @@ the pulse *width* (about 1–2 ms, repeated every 20 ms) encodes a position.
 - [ ] Measure the pin with the meter on DC volts at 25%, 50%, and 75% duty; explain the readings
 - [ ] Lower the PWM frequency until you can see flicker; note the frequency
 - [ ] Drive a micro servo (SG90-class) at 50 Hz and map the potentiometer to its angle
-- [ ] Power the servo from =VBUS= (5 V), not 3V3, and explain why in your notes
+- [ ] Power the servo from a separate 4–6 V supply (the 4×AA pack from week 7), with a 100 µF capacitor across it and its ground joined to the Pico's; explain in your notes why neither 3V3 nor the Pico's =VBUS= is a good choice
 ** Parts
 - Micro servo (SG90 or similar)
+- 4×AA battery holder and 100 µF capacitor from week 7
 - LED, resistor, potentiometer
 ** Checkpoint
 Your meter reads about 1.6 V on a PWM pin at 50% duty. Is the pin ever

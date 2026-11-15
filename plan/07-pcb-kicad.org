@@ -61,16 +61,20 @@ work.
 Layout turns the netlist into copper. Place parts first (that's most of the
 work), then route. Keep decoupling capacitors next to the pins they serve, use
 a ground plane (a whole layer, or a pour, of ground), keep high-current and
-signal paths sensible, and leave room for mounting holes and labels. Trace
+signal paths sensible, and leave room for mounting holes and labels. The
+Pico 2 W's Wi-Fi antenna sits at the end opposite the USB connector: the
+datasheet asks for an area of about 14 × 9 mm around it with no copper on
+any layer, and recommends placing it at the edge of your board. Trace
 width depends on current; for this board, signal traces of 0.25 mm and power
 traces of 0.5 mm or more are comfortable.
 
 - [[https://docs.kicad.org/][KiCad documentation]]: "Getting Started in KiCad", the PCB editor chapters
 - [[https://www.youtube.com/@PhilsLab][Phil's Lab]]: his PCB layout and grounding videos
-** Build [0/5]
+** Build [0/6]
 - [ ] Set the board outline (around 70 × 50 mm) and add four mounting holes
+- [ ] Place the Pico with its antenna end at the board edge, and add a keep-out zone (no copper on any layer) under and around the antenna as the Pico 2 W datasheet specifies
 - [ ] Place parts so that the OLED is visible and the sensor sits away from the Pico (it warms up)
-- [ ] Route all nets on two layers, with a ground pour on the bottom
+- [ ] Route all nets on two layers, with a ground pour on the bottom that stops at the antenna keep-out
 - [ ] Add silkscreen labels: pin names on headers, the board name, your initials, a version number
 - [ ] Print the layout at 1:1 on paper and check the real Pico and modules fit the footprints
 ** Parts
