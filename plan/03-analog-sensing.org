@@ -1,0 +1,174 @@
+#+TITLE: Phase 3: Analog signals and sensing
+#+TODO: TODO DOING | DONE SKIPPED
+
+Weeks 10–13. By the end you understand how a microcontroller measures a
+changing voltage, how it fakes an analog output with PWM, and why noisy inputs
+need more than a single threshold.
+
+* TODO Week 10: Analog-to-digital conversion
+:PROPERTIES:
+:WEEK: 10
+:CUSTOM_ID: week-10
+:END:
+** Learn
+The world is analog; the Pico counts. Its ADC samples a voltage between 0 V
+and its reference (about 3.3 V) and turns it into a 12-bit number, 0–4095.
+MicroPython's =read_u16()= scales that to 0–65535. Resolution is the voltage
+per step (3.3 V / 4096 ≈ 0.8 mV), but accuracy is a separate question:
+reference error, noise, and the source's resistance all show up in the
+readings. A potentiometer is an adjustable voltage divider, so it's the
+perfect first analog input.
+
+- SparkFun: [[https://learn.sparkfun.com/tutorials/analog-to-digital-conversion][Analog-to-digital conversion]]
+- [[https://docs.micropython.org/en/latest/library/machine.ADC.html][MicroPython =machine.ADC=]]
+- [[https://datasheets.raspberrypi.com/picow/pico-2-w-datasheet.pdf][Pico 2 W datasheet]]: which pins are ADC inputs (GP26–GP28) and how ADC_VREF is generated
+** Build [0/5]
+- [ ] Wire a 10 kΩ potentiometer as a divider between 3V3 and GND, with the wiper on GP26
+- [ ] Print the raw reading and the calculated voltage as you turn the knob
+- [ ] Measure the wiper voltage with the meter at five positions and compare with the Pico's numbers
+- [ ] Hold the knob still and record 100 readings; note the spread (that's noise)
+- [ ] Average 16 readings per sample and compare the spread
+** Parts
+- 10 kΩ linear potentiometer (breadboard-friendly)
+** Checkpoint
+The ADC returns 2048 out of 4095 (12-bit). Roughly what voltage is on the pin,
+and why might the meter disagree by a few tens of millivolts?
+#+begin_details
+#+html: <summary>Check your answer</summary>
+About 3.3 × 2048 / 4095 ≈ 1.65 V. Differences come from the ADC's reference
+not being exactly 3.3 V, the ADC's own offset and gain errors, noise on the
+signal and supply, and the meter's accuracy. Absolute accuracy needs
+calibration against a known voltage.
+#+end_details
+** Notes
+*** Expected
+*** Measured
+*** Different and why
+*** Next
+
+* TODO Week 11: PWM, duty cycle, and servos
+:PROPERTIES:
+:WEEK: 11
+:CUSTOM_ID: week-11
+:END:
+** Learn
+A GPIO pin can only be fully on or fully off. Pulse-width modulation switches
+it on and off fast, and the fraction of time it's on (the duty cycle) sets the
+average power. Your eye averages a fast-blinking LED into "dimmer", and a
+motor's inertia averages it into "slower". Hobby servos use PWM differently:
+the pulse *width* (about 1–2 ms, repeated every 20 ms) encodes a position.
+
+- SparkFun: [[https://learn.sparkfun.com/tutorials/pulse-width-modulation][Pulse width modulation]]
+- [[https://docs.micropython.org/en/latest/library/machine.PWM.html][MicroPython =machine.PWM=]]
+- SparkFun: [[https://learn.sparkfun.com/tutorials/hobby-servo-tutorial][Hobby servo tutorial]]
+** Build [0/5]
+- [ ] Fade an LED with PWM, using the potentiometer from week 10 to set the duty cycle
+- [ ] Measure the pin with the meter on DC volts at 25%, 50%, and 75% duty; explain the readings
+- [ ] Lower the PWM frequency until you can see flicker; note the frequency
+- [ ] Drive a micro servo (SG90-class) at 50 Hz and map the potentiometer to its angle
+- [ ] Power the servo from =VBUS= (5 V), not 3V3, and explain why in your notes
+** Parts
+- Micro servo (SG90 or similar)
+- LED, resistor, potentiometer
+** Checkpoint
+Your meter reads about 1.6 V on a PWM pin at 50% duty. Is the pin ever
+actually at 1.6 V? Why does the meter show that?
+#+begin_details
+#+html: <summary>Check your answer</summary>
+No. The pin is at 3.3 V half the time and 0 V the other half. The meter
+averages over a time much longer than one PWM period, so it shows roughly
+the average: 50% × 3.3 V ≈ 1.65 V.
+#+end_details
+** Notes
+*** Expected
+*** Measured
+*** Different and why
+*** Next
+
+* TODO Week 12: Light sensors and dividers
+:PROPERTIES:
+:WEEK: 12
+:CUSTOM_ID: week-12
+:END:
+** Learn
+A light-dependent resistor (photoresistor) changes resistance with light:
+hundreds of ohms in bright light, hundreds of kilohms in the dark. The ADC
+measures voltage, not resistance, so you put the LDR in a voltage divider
+with a fixed resistor. Choosing that resistor sets which light levels you can
+tell apart, which is your week 3 knowledge doing real work.
+
+- SparkFun: [[https://learn.sparkfun.com/tutorials/photocell-hookup-guide][Photocell hookup guide]]
+- SparkFun: [[https://learn.sparkfun.com/tutorials/voltage-dividers][Voltage dividers]] (review)
+** Build [0/5]
+- [ ] Measure the LDR's resistance in room light, under your hand, and under a phone flashlight
+- [ ] Choose a fixed resistor so room light lands near the middle of the ADC range; show the calculation
+- [ ] Build the divider on an ADC pin and print a light level from 0 to 100
+- [ ] Swap the fixed resistor for one ten times larger and describe how the useful range moves
+- [ ] Log readings for a few minutes as the room light changes (a lamp on and off is enough)
+** Parts
+- Photoresistors (LDRs, e.g. GL5528)
+- Resistors: 1 kΩ, 10 kΩ, 100 kΩ
+** Checkpoint
+The LDR is 10 kΩ in room light. Why is a 10 kΩ fixed resistor a good choice
+for the divider here?
+#+begin_details
+#+html: <summary>Check your answer</summary>
+With equal resistances, room light puts the output at mid-range (about
+1.65 V). That leaves room to move both up and down, and the divider's output
+changes fastest near the middle. So small light changes around room level
+give the biggest change in ADC counts.
+#+end_details
+** Notes
+*** Expected
+*** Measured
+*** Different and why
+*** Next
+
+* TODO Week 13: Noise, thresholds, and hysteresis
+:PROPERTIES:
+:WEEK: 13
+:CUSTOM_ID: week-13
+:END:
+** Learn
+Turn on a light "when it gets dark" with a single threshold, and near dusk
+it will flicker on and off as the reading jitters across the line. The fix is
+hysteresis: switch on below one level and off above a higher one, so noise
+smaller than the gap can't toggle it. It's the same idea as a Schmitt
+trigger in hardware and a debounce in software. Inputs are noisy, so a
+technically correct threshold can still behave badly.
+
+- Wikipedia: [[https://en.wikipedia.org/wiki/Schmitt_trigger][Schmitt trigger]] (the first two sections, for the idea)
+- Your week 12 log, to see the size of the noise
+** Build [0/5]
+- [ ] Make a night light with one threshold and watch it chatter near the boundary (cover the LDR slowly)
+- [ ] Measure the noise band from your logs and choose on and off levels wider than it
+- [ ] Add hysteresis with separate on and off thresholds; repeat the slow-cover test
+- [ ] Add a short delay that requires the condition to hold before switching, and compare
+- [ ] Fade the LED with PWM instead of snapping on, using week 11
+** Parts
+- LDR circuit from week 12, LED, resistor
+** Checkpoint
+Trace the full path from a change in light to the LED turning on: name each
+physical and software step.
+#+begin_details
+#+html: <summary>Check your answer</summary>
+1. Less light raises the LDR's resistance.
+2. The divider's output voltage changes (which way depends on whether the LDR
+   is on the top or the bottom).
+3. The ADC samples that voltage and converts it to a number.
+4. Your code averages the readings and compares them with the "on" threshold.
+5. Below it, the code sets the LED pin high or raises the PWM duty.
+6. The pin drives current through the resistor and LED.
+7. The LED stays on until the reading crosses the separate "off" threshold.
+#+end_details
+** Notes
+*** Expected
+*** Measured
+*** Different and why
+*** Next
+
+* Phase review
+- Can you convert between ADC counts and volts, and say what limits accuracy?
+- Can you explain PWM to someone who thinks the pin outputs an analog voltage?
+- Can you design a divider for a resistive sensor so it covers the range you care about?
+- Can you add hysteresis to any threshold decision?

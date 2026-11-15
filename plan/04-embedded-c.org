@@ -1,0 +1,258 @@
+#+TITLE: Phase 4: Embedded C and debugging
+#+TODO: TODO DOING | DONE SKIPPED
+
+Weeks 14–19. By the end you can build and flash C firmware with the Pico SDK,
+debug it with breakpoints, use interrupts and timers, and explain where your
+program's variables live in memory. Keep MicroPython around: comparing the two
+shows what each one hides.
+
+* TODO Week 14: The Pico C SDK, compiler, and flashing
+:PROPERTIES:
+:WEEK: 14
+:CUSTOM_ID: week-14
+:END:
+** Learn
+In C there's no interpreter on the chip. A cross-compiler on your laptop
+(=arm-none-eabi-gcc=) turns your code and the SDK into a single binary, and you
+flash that binary into the Pico's flash, as a UF2 file over BOOTSEL or later
+with the Debug Probe. CMake ties it together. One Pico W quirk: the onboard
+LED is wired to the Wi-Fi chip, not to a GPIO pin, so blinking it goes
+through the =pico_cyw43_arch= library.
+
+- Raspberry Pi: [[https://www.raspberrypi.com/documentation/microcontrollers/c_sdk.html][The C/C++ SDK]]
+- [[https://datasheets.raspberrypi.com/pico/getting-started-with-pico.pdf][Getting started with Raspberry Pi Pico-series]] (PDF): the manual setup chapter
+- [[https://github.com/raspberrypi/pico-examples][pico-examples]] on GitHub: =blink= and =pico_w/wifi/blink=
+- On Arch: =arm-none-eabi-gcc=, =arm-none-eabi-newlib=, =cmake=, and =picotool= packages
+** Build [0/5]
+- [ ] Install the toolchain and clone =pico-sdk= (with submodules) and =pico-examples=
+- [ ] Build =pico-examples= for =PICO_BOARD=pico2_w= and flash the Wi-Fi blink example via BOOTSEL
+- [ ] Create your own minimal project (=CMakeLists.txt=, =main.c=) that blinks an external LED on a GPIO pin
+- [ ] Run =arm-none-eabi-size= on your =.elf= and note the text, data, and bss sizes
+- [ ] Compare the flash size of your C blink with the MicroPython firmware size
+** Parts
+- Pico 2 WH, LED, resistor
+** Checkpoint
+What is in the UF2 file you drag onto the Pico, and what happened to
+MicroPython when you flashed it?
+#+begin_details
+#+html: <summary>Check your answer</summary>
+The UF2 holds your whole program, compiled to machine code and linked with
+the SDK code it uses, laid out for the Pico's flash. Flashing it overwrote
+MicroPython in flash. The interpreter is gone until you flash the MicroPython
+UF2 again.
+#+end_details
+** Notes
+*** Expected
+*** Measured
+*** Different and why
+*** Next
+
+* TODO Week 15: GPIO and polling in C
+:PROPERTIES:
+:WEEK: 15
+:CUSTOM_ID: week-15
+:END:
+** Learn
+The SDK's =hardware_gpio= functions (=gpio_init=, =gpio_set_dir=, =gpio_pull_up=,
+=gpio_get=, =gpio_put=) map almost one-to-one onto the registers described in
+the RP2350 datasheet. Polling means checking an input in a loop. It's simple
+and fine for many jobs, but the CPU spends its time asking "anything yet?"
+Rebuilding a MicroPython project in C shows you what the interpreter was
+doing for you.
+
+- [[https://www.raspberrypi.com/documentation/pico-sdk/hardware.html][Pico SDK hardware APIs]]: =hardware_gpio=
+- [[https://datasheets.raspberrypi.com/rp2350/rp2350-datasheet.pdf][RP2350 datasheet]]: the GPIO chapter's overview and the SIO section
+** Build [0/5]
+- [ ] Rebuild the week 8 button-toggles-LED project in C, with the internal pull-up and debouncing
+- [ ] Print over USB serial (=pico_enable_stdio_usb=) and read it with =minicom= or =screen=
+- [ ] Time how many loop iterations per second the C version does, and compare with MicroPython
+- [ ] Find the SIO registers that =gpio_put= writes to in the datasheet and read the SDK source for =gpio_put=
+- [ ] Write one line per difference you noticed between the two versions
+** Parts
+- Button, LED, resistor
+** Checkpoint
+Your C loop runs millions of times a second; your MicroPython loop ran tens of
+thousands. For a button-to-LED project, does that difference matter? When
+would it?
+#+begin_details
+#+html: <summary>Check your answer</summary>
+Not for a button: people press buttons on a scale of tens of milliseconds,
+and either loop is far faster. It matters with fast or precisely timed
+signals: bit-banging a protocol, sampling audio, generating exact pulses, or
+reacting within microseconds. Even then, interrupts or hardware peripherals
+(including PIO) are often better than a faster loop.
+#+end_details
+** Notes
+*** Expected
+*** Measured
+*** Different and why
+*** Next
+
+* TODO Week 16: The Debug Probe, SWD, and GDB
+:PROPERTIES:
+:WEEK: 16
+:CUSTOM_ID: week-16
+:END:
+** Learn
+Debugging firmware with printf is like debugging a web app with alerts. The
+Raspberry Pi Debug Probe connects to the Pico's SWD pins (Serial Wire Debug,
+Arm's debug port), and OpenOCD lets GDB talk to the running chip. You get
+breakpoints, single-stepping, and the ability to read any variable or
+hardware register while the CPU is stopped. The probe also gives you a UART
+serial port, so you can see output without USB stdio.
+
+- Raspberry Pi: [[https://www.raspberrypi.com/documentation/microcontrollers/debug-probe.html][Debug Probe documentation]]
+- [[https://datasheets.raspberrypi.com/pico/getting-started-with-pico.pdf][Getting started with Pico-series]] (PDF): the debugging chapter (OpenOCD and GDB)
+- Memfault Interrupt: [[https://interrupt.memfault.com/blog/gdb-for-firmware-1][GDB for firmware]]
+** Build [0/5]
+- [ ] Connect the Debug Probe to the Pico's SWD header and flash your week 15 program with OpenOCD
+- [ ] Set a breakpoint on the button handler, press the button, and inspect local variables
+- [ ] Step through =gpio_put= into the SDK and watch the SIO output register change (=x/1xw= on its address)
+- [ ] Introduce a bug on purpose (an off-by-one or wrong pin) and find it with GDB alone
+- [ ] Route =printf= through the probe's UART instead of USB and read it on the laptop
+** Parts
+- Raspberry Pi Debug Probe (comes with the cables)
+** Checkpoint
+You stop the CPU at a breakpoint while a PWM output is running. Does the PWM
+signal stop too? What does this tell you about peripherals?
+#+begin_details
+#+html: <summary>Check your answer</summary>
+Usually not. PWM is a hardware peripheral with its own counter, so it keeps
+generating the signal from its configured registers while the CPU is halted.
+Peripherals run alongside the CPU; the CPU only configures them. (Some
+peripherals can be set to pause in debug, and anything your code updates in
+software will freeze.)
+#+end_details
+** Notes
+*** Expected
+*** Measured
+*** Different and why
+*** Next
+
+* TODO Week 17: Timers and interrupts
+:PROPERTIES:
+:WEEK: 17
+:CUSTOM_ID: week-17
+:END:
+** Learn
+An interrupt lets hardware call your code: a pin changes or a timer expires,
+and the CPU pauses what it's doing, runs a handler, then resumes. That
+replaces polling for events that are rare or need quick reactions. Handlers
+should be short. Set a flag or push to a queue, and do the real work in the
+main loop, because a long handler delays everything else, including other
+interrupts. Variables shared between the two need =volatile= (and care).
+
+- [[https://www.raspberrypi.com/documentation/pico-sdk/hardware.html][Pico SDK hardware APIs]]: =hardware_gpio= (=gpio_set_irq_enabled_with_callback=) and =hardware_irq=
+- [[https://www.raspberrypi.com/documentation/pico-sdk/high_level.html][Pico SDK high-level APIs]]: =pico_time= (=add_repeating_timer_ms=)
+- [[https://github.com/raspberrypi/pico-examples][pico-examples]]: =gpio/hello_gpio_irq= and =timer/timer_lowlevel=
+** Build [0/5]
+- [ ] Replace the polled button with a GPIO interrupt that sets a flag; handle the flag in the main loop
+- [ ] Blink an LED from a repeating timer while the main loop does something else
+- [ ] Count interrupts from a bouncy button with no debouncing, then debounce using timestamps
+- [ ] Put a deliberate 100 ms busy-wait in the handler and observe what breaks; then remove it
+- [ ] Set a breakpoint in the handler with the Debug Probe and look at the call stack
+** Parts
+- Button, LEDs, resistors, Debug Probe
+** Checkpoint
+What does an interrupt change about the program's flow, and why should the
+handler do as little as possible?
+#+begin_details
+#+html: <summary>Check your answer</summary>
+The handler runs asynchronously: it can run between any two instructions of
+the main loop, whenever the event happens, instead of when the loop checks.
+While it runs, the main loop (and same-or-lower-priority interrupts) wait. A
+long handler adds latency to everything else and can cause missed events.
+Shared data also gets harder to keep consistent. So record the event and
+return.
+#+end_details
+** Notes
+*** Expected
+*** Measured
+*** Different and why
+*** Next
+
+* TODO Week 18: Memory, the stack, and state machines
+:PROPERTIES:
+:WEEK: 18
+:CUSTOM_ID: week-18
+:END:
+** Learn
+Your program's code and constants live in flash. Globals that start with a
+value live in =.data= (copied from flash to RAM at boot). Zero-initialized
+globals live in =.bss=. Locals live on the stack, and there's no OS to tell
+you when it overflows. The linker map file shows where everything went. With
+that picture, rebuilding the reaction game as an explicit finite-state
+machine (an enum for the state and a switch for the transitions) makes its
+behavior easy to reason about and to test.
+
+- Memfault Interrupt: [[https://interrupt.memfault.com/blog/zero-to-main-1][From zero to main()]] (what happens before =main=)
+- Your build's =.map= file (add =pico_add_extra_outputs= in CMake)
+** Build [0/5]
+- [ ] Find a global, a static, a local, and a =const= table in your map file or with GDB, and note which region each is in
+- [ ] Rebuild the week 9 reaction game in C as a state machine (waiting, ready, go, result, false start)
+- [ ] Drive the state machine from a timer and the button interrupt, with no busy-waits
+- [ ] Draw the state diagram in your notes, with every transition labeled by its event
+- [ ] Write a recursive function that overflows the stack, run it under GDB, and describe what you see
+** Parts
+- Button, LED, resistor, Debug Probe
+** Checkpoint
+Where do these live: =int count = 5;= at file scope, =static int hits;= inside a
+function, =int i;= inside a function, and =const char msg[] = "hi";= at file
+scope?
+#+begin_details
+#+html: <summary>Check your answer</summary>
+- =count= is an initialized global: =.data= (stored in flash, copied to RAM at boot).
+- =hits= is a static, zero-initialized: =.bss= in RAM.
+- =i= is a local: on the stack (or only in a register).
+- =msg= is const data: usually =.rodata=, which stays in flash.
+#+end_details
+** Notes
+*** Expected
+*** Measured
+*** Different and why
+*** Next
+
+* TODO Week 19: PIO state machines (optional)
+:PROPERTIES:
+:WEEK: 19
+:CUSTOM_ID: week-19
+:OPTIONAL: t
+:END:
+** Learn
+The RP2350's programmable I/O blocks are tiny processors that run nine
+simple instructions with exact cycle timing, independent of the CPU. They let
+you implement a protocol the chip has no hardware for (WS2812 LEDs, extra
+UARTs, unusual sensors) in software, but with hardware timing. Few
+microcontrollers have anything like it, and it teaches how timing-critical
+interfaces actually work. Mark this week SKIPPED if you'd rather move on.
+
+- [[https://docs.micropython.org/en/latest/rp2/tutorial/pio.html][MicroPython PIO tutorial]] (the fastest way in)
+- [[https://datasheets.raspberrypi.com/rp2350/rp2350-datasheet.pdf][RP2350 datasheet]]: the PIO chapter's introduction and instruction set
+- [[https://github.com/raspberrypi/pico-examples][pico-examples]]: =pio/blink= and =pio/ws2812=
+** Build [0/4]
+- [ ] Blink an LED from a PIO program at an exact frequency, in MicroPython
+- [ ] Explain each instruction and the cycle count in your notes
+- [ ] Drive a WS2812 (NeoPixel) LED or short strip from PIO, using the 5 V supply and a 3.3 V data line
+- [ ] Run the C =pio/blink= example and compare with the MicroPython version
+** Parts
+- A single WS2812B LED on a breakout, or a short strip (8 LEDs or fewer)
+** Checkpoint
+Why would you use PIO instead of toggling a pin from a C loop?
+#+begin_details
+#+html: <summary>Check your answer</summary>
+PIO timing is exact and deterministic: each instruction takes a known number
+of cycles, and interrupts or other CPU work can't disturb it. A C loop's
+timing shifts with compiler output, interrupts, and cache or flash effects.
+PIO also frees the CPU for other work.
+#+end_details
+** Notes
+*** Expected
+*** Measured
+*** Different and why
+*** Next
+
+* Phase review
+- Can you build, flash, and debug a C program on the Pico without following a guide?
+- Can you explain the difference between polling and interrupts, and pick one for a given job?
+- Can you say where any variable in your program lives in memory?
+- Can you draw a state machine for a small device and implement it?
