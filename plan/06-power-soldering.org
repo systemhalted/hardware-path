@@ -1,0 +1,138 @@
+#+TITLE: Phase 6: Power and soldering
+#+TODO: TODO DOING | DONE SKIPPED
+
+Weeks 26–28. By the end you understand where your circuit's power comes from
+and how much it needs, you can solder neatly, and the capstone has moved off
+the breadboard. This phase prepares you for designing a PCB in Phase 7.
+
+* TODO Week 26: Regulators, decoupling, and current budgets
+:PROPERTIES:
+:WEEK: 26
+:CUSTOM_ID: week-26
+:END:
+** Learn
+Every circuit needs a stable supply at the right voltage. A linear regulator
+(LDO) burns the difference between input and output as heat: simple and
+quiet, but wasteful when the gap is large. A switching regulator (buck,
+boost, or buck-boost) converts efficiently but adds ripple and design care.
+The Pico has a buck-boost converter that accepts 1.8–5.5 V on VSYS, which is
+why it runs from USB or batteries. Decoupling capacitors (typically 100 nF
+right next to each chip's supply pin) supply the fast current spikes the
+regulator can't. A current budget adds up what everything draws, and it tells
+you how long a battery lasts.
+
+- [[https://datasheets.raspberrypi.com/picow/pico-2-w-datasheet.pdf][Pico 2 W datasheet]]: the power section (VSYS, VBUS, the Schottky diode, powering from batteries)
+- SparkFun: [[https://learn.sparkfun.com/tutorials/capacitors][Capacitors]] (the decoupling application section)
+- SparkFun: [[https://learn.sparkfun.com/tutorials/battery-technologies][Battery technologies]]
+- SparkFun: [[https://learn.sparkfun.com/tutorials/how-to-power-a-project][How to power a project]]
+** Build [0/5]
+- [ ] Measure the capstone's current draw with the meter in series: idle, sensor reading, SD write, and Wi-Fi transmit
+- [ ] Write a current budget table and estimate how long 3×AA cells (about 2000 mAh) would run it
+- [ ] Power the Pico from 3×AA cells on VSYS (no USB) and confirm it runs
+- [ ] Read the datasheet section on using VSYS and USB together, and explain the role of the diode
+- [ ] Try one power-saving change (longer interval, Wi-Fi off between sends, lower clock) and measure the difference
+** Parts
+- 3×AA battery holder with leads
+- 100 nF ceramic capacitors (for Phase 7, buy a strip now)
+** Checkpoint
+A linear regulator drops 5 V to 3.3 V at 200 mA. How much power does it turn
+into heat, and what's its efficiency?
+#+begin_details
+#+html: <summary>Check your answer</summary>
+P = (5 − 3.3) × 0.2 = 0.34 W of heat. Efficiency is 3.3 / 5 = 66%. A buck
+converter would typically manage 85–95%, which matters most on batteries.
+#+end_details
+** Notes
+*** Expected
+*** Measured
+*** Different and why
+*** Next
+
+* TODO Week 27: Soldering
+:PROPERTIES:
+:WEEK: 27
+:CUSTOM_ID: week-27
+:END:
+** Learn
+A good joint is shiny and concave, like a little volcano, and it wets both the
+pad and the lead. You get it by heating the pad and the lead together, then
+feeding solder into the joint, not onto the iron. Flux does the real work of
+cleaning the metal; leaded solder (63/37) is easier to learn with, lead-free
+is safer to handle. A practice kit gives you dozens of joints to get wrong
+cheaply.
+
+- Adafruit: [[https://learn.adafruit.com/adafruit-guide-excellent-soldering][Adafruit guide to excellent soldering]] (the common problems page is the most useful)
+- SparkFun: [[https://learn.sparkfun.com/tutorials/how-to-solder-through-hole-soldering][How to solder: through-hole soldering]]
+- [[https://pine64.org/devices/pinecil/][Pinecil]] soldering iron
+** Build [0/5]
+- [ ] Set up a ventilated space, tip cleaner, flux, and safety glasses
+- [ ] Solder a through-hole practice kit (any small kit with 20 or more joints)
+- [ ] Inspect every joint against the Adafruit common-problems photos and redo the bad ones
+- [ ] Desolder and replace one component with solder wick
+- [ ] Solder headers onto a breakout board you own that came without them (or a spare)
+** Parts
+- Soldering iron (Pinecil or similar with temperature control), stand, brass tip cleaner
+- Solder (0.8 mm) and a flux pen
+- Solder wick
+- A small through-hole practice kit
+- Safety glasses
+** Checkpoint
+Your joint looks dull, grainy, and balled up around the lead without flowing
+onto the pad. What went wrong and how do you fix it?
+#+begin_details
+#+html: <summary>Check your answer</summary>
+It's a cold joint: the pad and lead weren't hot enough for the solder to wet
+them, or the part moved while it cooled. Add a little flux, reheat the pad
+and lead together, let the solder flow, and hold everything still until it
+solidifies.
+#+end_details
+** Notes
+*** Expected
+*** Measured
+*** Different and why
+*** Next
+
+* TODO Week 28: The capstone on protoboard
+:PROPERTIES:
+:WEEK: 28
+:CUSTOM_ID: week-28
+:END:
+** Learn
+Moving a circuit from a breadboard to a soldered protoboard forces you to plan
+the layout: where parts go, which way power runs, how to keep wires short.
+That planning is the same thinking as PCB layout next phase, done by hand.
+Socket the Pico in female headers so you can reuse it.
+
+- Your capstone v1/v2 schematic (update it first if it drifted on the breadboard)
+- Adafruit soldering guide, for reference
+** Build [0/5]
+- [ ] Draw the final capstone schematic, including power, decoupling capacitors, and pull-ups if needed
+- [ ] Plan the protoboard layout on paper (or squared paper) before cutting or soldering anything
+- [ ] Solder female headers for the Pico and the modules, then the wiring
+- [ ] Check every power and ground connection with continuity before first power-on
+- [ ] Capstone: run the full v2 firmware on the soldered board for 24 hours
+** Parts
+- Protoboard (perfboard or stripboard), around 7×9 cm
+- Female header strips
+- Solid-core hookup wire
+** Checkpoint
+Why check continuity between the 3.3 V and ground rails *before* first
+power-on, and what reading do you hope to see?
+#+begin_details
+#+html: <summary>Check your answer</summary>
+A solder bridge or misplaced wire between power and ground is a short. At
+power-on it can overheat parts, trip the USB port's protection, or damage
+the regulator. You want no continuity beep. (A brief beep that fades is fine:
+the decoupling capacitors are charging from the meter.)
+#+end_details
+** Notes
+*** Expected
+*** Measured
+*** Different and why
+*** Next
+
+* Phase review
+- Can you write a current budget and estimate battery life?
+- Can you explain what decoupling capacitors do and where they go?
+- Can you produce clean solder joints and recognize bad ones?
+- Can you plan a circuit's physical layout before building it?

@@ -1,0 +1,276 @@
+#+TITLE: Phase 5: Talking to peripherals
+#+TODO: TODO DOING | DONE SKIPPED
+
+Weeks 20–25. By the end you can pick a sensor, read its datasheet, wire it up,
+watch its traffic on a logic analyzer, and get its data onto another machine,
+first over a wire and then over Wi-Fi. This phase builds the first two
+versions of the capstone (see the capstone page). MicroPython keeps the
+iteration fast here. Redo a week in C if you want the practice.
+
+* TODO Week 20: Reading datasheets
+:PROPERTIES:
+:WEEK: 20
+:CUSTOM_ID: week-20
+:END:
+** Learn
+A datasheet is a part's API documentation, and like API docs it buries the
+three facts you need among forty pages you don't. Learn to find them fast:
+supply voltage range and current, pinout, communication interface and
+address, timing requirements, and absolute maximum ratings (the limits that
+destroy the part, not ones you design to). Breakout boards add their own
+layer: a regulator, level shifters, or pull-up resistors that change what you
+need to do.
+
+- Bosch: [[https://www.bosch-sensortec.com/products/environmental-sensors/humidity-sensors-bme280/][BME280 product page]] (download the datasheet from here)
+- Becky Stern: [[https://beckystern.com/2025/10/28/how-to-read-a-datasheet/][How to read a datasheet]] (article and video)
+** Build [0/5]
+- [ ] From the BME280 datasheet, write down the supply range, typical current, I²C addresses, and the accuracy of temperature and humidity
+- [ ] Find the absolute maximum ratings and explain how they differ from operating conditions
+- [ ] Look at your breakout board's schematic (or the seller's page): does it have a regulator, level shifters, or I²C pull-ups?
+- [ ] Do the same for an SSD1306 128×64 OLED module
+- [ ] Draw the wiring for both on the Pico's I²C0 pins before connecting anything
+** Parts
+- BME280 breakout, 3.3 V-compatible (temperature, humidity, pressure). Beware: a "BMP280" looks the same but has no humidity sensor
+- SSD1306 128×64 OLED, I²C version (four pins)
+** Checkpoint
+For a new sensor, which three pieces of information must you find before you
+connect it to a Pico?
+#+begin_details
+#+html: <summary>Check your answer</summary>
+1. The supply voltage range. Is 3.3 V allowed, and does the breakout expect
+   5 V on its VIN?
+2. The logic level of its signal pins. Will it ever drive more than 3.3 V into
+   the Pico?
+3. The communication interface and the details needed to talk to it: I²C
+   address, SPI mode, or UART baud rate.
+Also check whether pull-ups are already on the board.
+#+end_details
+** Notes
+*** Expected
+*** Measured
+*** Different and why
+*** Next
+
+* TODO Week 21: I²C and the logic analyzer
+:PROPERTIES:
+:WEEK: 21
+:CUSTOM_ID: week-21
+:END:
+** Learn
+I²C uses two shared wires: SDA (data) and SCL (clock). Many devices sit on the
+same pair, each with a 7-bit address. The lines are open-drain: devices only
+pull them low, and pull-up resistors bring them high. Missing pull-ups are a
+classic reason I²C "doesn't work". A logic analyzer records digital lines
+over time, and PulseView's I²C decoder turns the waveform into "write to
+0x76, register 0xD0" so you can see the protocol rather than guess at it.
+
+- SparkFun: [[https://learn.sparkfun.com/tutorials/i2c][I²C]]
+- [[https://docs.micropython.org/en/latest/library/machine.I2C.html][MicroPython =machine.I2C=]]
+- [[https://sigrok.org/wiki/PulseView][PulseView]] and its [[https://sigrok.org/wiki/Protocol_decoder:I2c][I²C decoder]]
+** Build [0/6]
+- [ ] Wire the BME280 to I²C0 and run =i2c.scan()=; confirm the address matches the datasheet
+- [ ] Read the chip ID register (0xD0) by hand with =readfrom_mem= and check it's 0x60
+- [ ] Capture that transaction with the logic analyzer and decode it in PulseView; label start, address, ACK, data, and stop in your notes
+- [ ] Read temperature and humidity using a MicroPython BME280 driver
+- [ ] Add the OLED on the same bus and show the readings on it
+- [ ] Measure the I²C clock frequency in PulseView and compare with what you configured
+** Parts
+- BME280 breakout and SSD1306 OLED from week 20
+- USB logic analyzer (8-channel, sigrok-compatible) and PulseView
+** Checkpoint
+=i2c.scan()= returns an empty list. List the likely causes in the order you'd
+check them.
+#+begin_details
+#+html: <summary>Check your answer</summary>
+1. Power and ground: is the sensor getting 3.3 V, and does it share the
+   Pico's ground?
+2. SDA and SCL swapped, or wired to pins that aren't the I²C instance you
+   configured.
+3. No pull-ups on SDA and SCL. Check the breakout; add 4.7 kΩ to 3.3 V if
+   there are none.
+4. The device at a different address, or held in reset by an address or
+   CS pin.
+5. A bad jumper wire or breadboard contact. Check with continuity.
+The logic analyzer shows you directly whether the clock toggles and whether
+anyone ACKs.
+#+end_details
+** Notes
+*** Expected
+*** Measured
+*** Different and why
+*** Next
+
+* TODO Week 22: SPI and an SD card
+:PROPERTIES:
+:WEEK: 22
+:CUSTOM_ID: week-22
+:END:
+** Learn
+SPI uses separate lines for clock (SCK), data out (MOSI or TX), and data in
+(MISO or RX), plus one chip-select (CS) line per device. There are no
+addresses: you pick a device by pulling its CS low. It's faster and simpler
+than I²C but costs more pins. An SD card speaks SPI, which makes it a natural
+log store for the capstone.
+
+- SparkFun: [[https://learn.sparkfun.com/tutorials/serial-peripheral-interface-spi][Serial Peripheral Interface]]
+- [[https://docs.micropython.org/en/latest/library/machine.SPI.html][MicroPython =machine.SPI=]]
+- micropython-lib: [[https://github.com/micropython/micropython-lib/tree/master/micropython/drivers/storage/sdcard][SD card driver]]
+** Build [0/5]
+- [ ] Wire a 3.3 V-compatible microSD breakout to SPI0 and mount the card with the =sdcard= driver
+- [ ] Write a text file, unplug, and read it on your laptop
+- [ ] Capture the SPI traffic during a write with the logic analyzer and identify CS, clock, and data
+- [ ] Measure how long it takes to append one line, and how long to write 100 lines in one go
+- [ ] Write a table in your notes comparing I²C, SPI, and UART: wires, addressing, speed, typical uses
+** Parts
+- microSD card breakout that works at 3.3 V (many cheap 5 V-only modules don't; check the regulator and level shifter)
+- A small microSD card (any size; format FAT32)
+** Checkpoint
+You have three SPI devices and one I²C bus. How many signal wires does each
+need, and what does that suggest about when to choose each?
+#+begin_details
+#+html: <summary>Check your answer</summary>
+SPI with three devices needs SCK, MOSI, and MISO (shared) plus three CS lines:
+six wires. I²C needs two wires for any number of devices with different
+addresses. SPI is faster and simpler (good for displays, SD cards, fast ADCs).
+I²C saves pins and suits slower sensors.
+#+end_details
+** Notes
+*** Expected
+*** Measured
+*** Different and why
+*** Next
+
+* TODO Week 23: UART between machines
+:PROPERTIES:
+:WEEK: 23
+:CUSTOM_ID: week-23
+:END:
+** Learn
+UART is the oldest of the three: two wires (TX to the other side's RX, and
+the reverse), no clock, and both sides agreeing on a baud rate in advance.
+It's how many GPS modules and debug consoles talk, and how two boards can
+exchange data with almost no setup. The Debug Probe's UART gives the laptop a
+serial port. The Raspberry Pi 3B (mrshudson) has a 3.3 V UART on its GPIO
+header, so the two boards can be wired directly with a shared ground.
+
+- SparkFun: [[https://learn.sparkfun.com/tutorials/serial-communication][Serial communication]]
+- [[https://docs.micropython.org/en/latest/library/machine.UART.html][MicroPython =machine.UART=]]
+- Raspberry Pi: [[https://www.raspberrypi.com/documentation/computers/configuration.html][Configuration]] (the UART section: enabling the serial port and turning off the login console)
+** Build [0/5]
+- [ ] Send sensor readings from the Pico's UART0 to the laptop through the Debug Probe and read them with =minicom=
+- [ ] Capture a few bytes on the logic analyzer and decode them; find the start and stop bits
+- [ ] Set the wrong baud rate on one side and describe what you receive
+- [ ] Optional: wire the Pico to mrshudson's GPIO14/15 (TX/RX crossed, grounds joined) and read lines with Python on the Pi
+- [ ] Define a simple line format (e.g. =T=21.4,H=56.2=) and parse it on the receiving side
+** Parts
+- Debug Probe (UART port), logic analyzer
+- Female-to-female jumpers if you connect to mrshudson
+** Checkpoint
+Why do you connect TX to RX (crossed), and why must the grounds be connected
+even though no "ground signal" is sent?
+#+begin_details
+#+html: <summary>Check your answer</summary>
+Each side transmits on TX and listens on RX, so one side's TX has to reach
+the other's RX. Voltages only mean something relative to a reference. Without
+a shared ground, the receiver can't tell what the sender considers high and
+low, and the signal is garbage, or worse, current finds another path.
+#+end_details
+** Notes
+*** Expected
+*** Measured
+*** Different and why
+*** Next
+
+* TODO Week 24: Sampling, logging, and capstone v1
+:PROPERTIES:
+:WEEK: 24
+:CUSTOM_ID: week-24
+:END:
+** Learn
+Logging data well is harder than reading it once. How often should you
+sample? Faster than the thing changes, and no faster than you can store and
+trust. What happens when the sensor is unplugged, or returns an impossible
+value? A device left alone overnight has to handle that without crashing. This
+week combines the sensor, display, and SD card into the first version of the
+StarFest conditions monitor.
+
+- Your week 20–22 notes
+- The capstone page, for the v1 requirements
+- Bosch BME280 datasheet: the section on self-heating and recommended modes for weather monitoring
+** Build [0/6]
+- [ ] Capstone v1: read temperature, humidity, and pressure at a chosen interval
+- [ ] Capstone v1: show the current readings on the OLED
+- [ ] Capstone v1: append timestamped readings to a CSV on the SD card
+- [ ] Capstone v1: unplug the sensor while running; the device shows an error and recovers when it's reconnected
+- [ ] Reject impossible values (e.g. humidity above 100%) and count them
+- [ ] Run it overnight; check the log for gaps and explain any you find
+** Parts
+- Everything from weeks 20–22
+** Checkpoint
+Your overnight log has a 40-minute gap at 3 a.m. List three plausible causes
+and how you would tell them apart.
+#+begin_details
+#+html: <summary>Check your answer</summary>
+1. The program crashed or hung, then a watchdog or reboot restarted it. A
+   log line at boot or a reboot counter would show this.
+2. The sensor stopped responding. Your error counter or error log entries
+   would show it.
+3. SD card writes failed or stalled. Check the write-error count, and whether
+   readings still appeared on the OLED.
+Power dips would show as reboots too. Logging a boot message and keeping
+error counters is what makes these distinguishable.
+#+end_details
+** Notes
+*** Expected
+*** Measured
+*** Different and why
+*** Next
+
+* TODO Week 25: Wi-Fi and capstone v2
+:PROPERTIES:
+:WEEK: 25
+:CUSTOM_ID: week-25
+:END:
+** Learn
+The Pico 2 W's wireless chip connects over SPI internally, and MicroPython
+wraps it in the =network= module. Sending readings to a server means
+thinking about what happens when Wi-Fi drops: retry, buffer, or accept the
+loss. On mrshudson you'll write the receiving side yourself: a small Python
+service that accepts readings, stores them, and serves a page with recent
+values and a dew-point warning. This is software you know how to write; the
+new part is the device on the other end being unreliable.
+
+- [[https://datasheets.raspberrypi.com/picow/connecting-to-the-internet-with-pico-w.pdf][Connecting to the internet with Raspberry Pi Pico W-series]] (PDF)
+- [[https://docs.micropython.org/en/latest/library/network.WLAN.html][MicroPython =network.WLAN=]]
+- Wikipedia: [[https://en.wikipedia.org/wiki/Dew_point][Dew point]] (the Magnus formula section)
+** Build [0/6]
+- [ ] Connect the Pico to your Wi-Fi and print its IP address; reconnect automatically after the router restarts
+- [ ] Capstone v2: write a small HTTP service on mrshudson that accepts JSON readings and stores them (SQLite on bakerstreet is a good choice)
+- [ ] Capstone v2: POST each reading from the Pico; buffer readings to the SD card while the server is unreachable and send them later
+- [ ] Capstone v2: serve a page on mrshudson showing the last 24 hours
+- [ ] Capstone v2: calculate dew point and show a warning when the temperature is within 2–3 °C of it
+- [ ] Run it as a systemd service on mrshudson so it survives reboots
+** Parts
+- Pico 2 WH (already have), mrshudson
+** Checkpoint
+Why does a dew-point warning matter for a night of observing, and why do
+temperature and humidity alone not tell you whether the sky will be clear?
+#+begin_details
+#+html: <summary>Check your answer</summary>
+When a surface cools to the dew point, water condenses on it: telescope
+optics and eyepieces fog up. A warning tells you to start dew heaters or use
+dew shields. Clear skies depend on cloud cover, transparency (haze, smoke,
+humidity higher up), and seeing (turbulence aloft). A ground-level
+temperature and humidity sensor measures none of these directly.
+#+end_details
+** Notes
+*** Expected
+*** Measured
+*** Different and why
+*** Next
+
+* Phase review
+- Can you find a new sensor's supply voltage, interface, and address in its datasheet within ten minutes?
+- Can you debug an I²C bus with a logic analyzer instead of guesswork?
+- Can you choose between I²C, SPI, and UART for a new part and justify it?
+- Can you build a device that keeps logging through sensor and network failures?
