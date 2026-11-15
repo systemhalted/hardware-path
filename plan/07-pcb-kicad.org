@@ -1,0 +1,178 @@
+#+TITLE: Phase 7: PCB design in KiCad
+#+TODO: TODO DOING | DONE SKIPPED
+
+Weeks 29–32. By the end you have designed a printed circuit board for the
+capstone, ordered it, assembled it, and brought it up. Taking a design from
+schematic to a working board is the core skill of hardware engineering. The
+board is deliberately simple: the Pico and the modules sit in sockets, and
+your PCB replaces the protoboard wiring.
+
+Order the board at the end of week 31. Fabrication and shipping usually take
+one to three weeks, so start Phase 8 while you wait and come back for week 32.
+
+* TODO Week 29: Schematic capture
+:PROPERTIES:
+:WEEK: 29
+:CUSTOM_ID: week-29
+:END:
+** Learn
+KiCad's schematic editor is where the design becomes a precise, checkable
+description: every part has a symbol, every connection is a net, and the
+electrical rules check (ERC) catches unconnected pins and power nets with no
+source. Each symbol gets a footprint: the copper pattern it will solder to.
+Good schematics read like good code, with named nets, power symbols instead
+of long wires, and sections laid out by function.
+
+- [[https://docs.kicad.org/][KiCad documentation]]: "Getting Started in KiCad", the schematic chapters
+- [[https://www.youtube.com/@PhilsLab][Phil's Lab]] on YouTube: his KiCad schematic videos
+- Your week 28 schematic
+** Build [0/5]
+- [ ] Install KiCad and work through the schematic part of the official getting-started tutorial
+- [ ] Draw the capstone schematic: Pico socket, BME280 and OLED headers, microSD module header, decoupling, power input
+- [ ] Use net labels for I²C, SPI, and power instead of crossing wires
+- [ ] Assign a footprint to every symbol; use two 1×20 female header footprints for the Pico, spaced to match its mechanical drawing
+- [ ] Run ERC and fix every error and warning, writing down what each one meant
+** Parts
+- None (software only). KiCad is free.
+** Checkpoint
+What's the difference between a symbol and a footprint, and why does a wrong
+footprint cost more than a wrong symbol?
+#+begin_details
+#+html: <summary>Check your answer</summary>
+A symbol is the part's logical representation in the schematic: pins and
+their names. A footprint is the physical copper layout on the board: pad
+sizes, spacing, and pin numbering. A symbol mistake is usually caught by ERC
+or review. A wrong footprint (wrong spacing, or a mirrored pin order) gets
+manufactured, and you learn about it when the part doesn't fit or doesn't
+work.
+#+end_details
+** Notes
+*** Expected
+*** Measured
+*** Different and why
+*** Next
+
+* TODO Week 30: Footprints and layout
+:PROPERTIES:
+:WEEK: 30
+:CUSTOM_ID: week-30
+:END:
+** Learn
+Layout turns the netlist into copper. Place parts first (that's most of the
+work), then route. Keep decoupling capacitors next to the pins they serve, use
+a ground plane (a whole layer, or a pour, of ground), keep high-current and
+signal paths sensible, and leave room for mounting holes and labels. Trace
+width depends on current; for this board, signal traces of 0.25 mm and power
+traces of 0.5 mm or more are comfortable.
+
+- [[https://docs.kicad.org/][KiCad documentation]]: "Getting Started in KiCad", the PCB editor chapters
+- [[https://www.youtube.com/@PhilsLab][Phil's Lab]]: his PCB layout and grounding videos
+** Build [0/5]
+- [ ] Set the board outline (around 70 × 50 mm) and add four mounting holes
+- [ ] Place parts so that the OLED is visible and the sensor sits away from the Pico (it warms up)
+- [ ] Route all nets on two layers, with a ground pour on the bottom
+- [ ] Add silkscreen labels: pin names on headers, the board name, your initials, a version number
+- [ ] Print the layout at 1:1 on paper and check the real Pico and modules fit the footprints
+** Parts
+- Paper and a printer (for the 1:1 fit check)
+** Checkpoint
+Why place the BME280 away from the Pico and the regulator, and why does the
+ground pour help?
+#+begin_details
+#+html: <summary>Check your answer</summary>
+The Pico, especially with Wi-Fi active, and its regulator warm the board
+nearby. A sensor beside them reads high and its humidity reading drifts, so
+distance (or a slot in the board) gives truer readings. A ground pour gives
+every part a short, low-impedance return path. It reduces noise and makes
+routing easier because ground connections only need a via.
+#+end_details
+** Notes
+*** Expected
+*** Measured
+*** Different and why
+*** Next
+
+* TODO Week 31: Design rules, Gerbers, and ordering
+:PROPERTIES:
+:WEEK: 31
+:CUSTOM_ID: week-31
+:END:
+** Learn
+The design rule check (DRC) enforces the fab's limits: minimum trace width,
+spacing, drill sizes, and annular rings. Set KiCad's rules to match your
+manufacturer before you run it. Gerbers (one file per layer) plus a drill file
+are what the fab actually builds from. Their online viewer is your last
+chance to catch a missing layer or a flipped silkscreen.
+
+- [[https://jlcpcb.com/capabilities/pcb-capabilities][JLCPCB PCB capabilities]] (set your design rules from these; PCBWay publishes similar ones)
+- [[https://docs.kicad.org/][KiCad documentation]]: "Getting Started in KiCad", the fabrication outputs section
+** Build [0/5]
+- [ ] Enter the fab's minimum trace, spacing, and drill values into KiCad's board setup
+- [ ] Run DRC and fix everything; write down any rule you had to look up
+- [ ] Export Gerbers and the drill file, and inspect them in KiCad's Gerber viewer
+- [ ] Upload to the fab, compare their preview with your design, and order five boards
+- [ ] Record the order date; start Phase 8 while waiting
+** Parts
+- PCB order (about $5–15 including slow shipping)
+** Checkpoint
+The fab's minimum trace spacing is 0.127 mm (5 mil). Why might you still set
+your own rules wider, say 0.2 mm?
+#+begin_details
+#+html: <summary>Check your answer</summary>
+Designing at the fab's absolute limit leaves no margin for manufacturing
+variation, which raises the chance of shorts or defects. It also makes hand
+soldering and rework harder. A simple board like this has plenty of room, so
+wider rules cost nothing and make the board more forgiving.
+#+end_details
+** Notes
+*** Expected
+*** Measured
+*** Different and why
+*** Next
+
+* TODO Week 32: Assembly and bring-up
+:PROPERTIES:
+:WEEK: 32
+:CUSTOM_ID: week-32
+:END:
+** Learn
+Bring-up is powering a new board for the first time, carefully and in stages.
+First inspect it and check for shorts with no power. Then power it with
+nothing plugged in and measure the rails. Then add one part at a time,
+confirming each works before adding the next. When something's wrong, the
+staged approach tells you where.
+
+- Your week 28 continuity checklist
+- Your week 21 I²C debugging notes
+** Build [0/6]
+- [ ] Inspect the bare boards against your design; check 3V3-to-GND and VSYS-to-GND for shorts
+- [ ] Solder the female headers and any passive parts
+- [ ] Power the board with only the Pico fitted; measure 3.3 V at every module header
+- [ ] Add modules one at a time: OLED, then BME280, then microSD, testing each with a small script
+- [ ] Capstone v3: run the full firmware on your PCB for 24 hours
+- [ ] List what you'd change in a version 2 of the board, and add a short "errata" section to your notes
+** Parts
+- Your boards from week 31
+- Female headers (from week 28 stock)
+** Checkpoint
+You plug in the new board and the Pico's LED doesn't come on, though it did
+on the protoboard. What do you check first, without removing anything?
+#+begin_details
+#+html: <summary>Check your answer</summary>
+Unplug it, then check for a short between 3V3 and GND, and between VSYS and
+GND, with continuity mode. A short is the most common fault, and it can also
+pull the supply down. If there's no short, power it and measure VBUS, VSYS,
+and 3V3 at the Pico's pins. Then check that the Pico sits in its sockets the
+right way round, and that the footprint spacing and pin-1 position match.
+#+end_details
+** Notes
+*** Expected
+*** Measured
+*** Different and why
+*** Next
+
+* Phase review
+- Can you draw a clean schematic in KiCad and pass ERC?
+- Can you lay out a two-layer board with sensible placement and a ground pour?
+- Can you set design rules from a fab's capabilities and produce Gerbers?
+- Can you bring up a new board in stages and find a fault if it doesn't work?

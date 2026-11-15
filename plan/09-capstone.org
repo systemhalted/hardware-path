@@ -1,0 +1,53 @@
+#+TITLE: Capstone: StarFest conditions monitor
+
+A small device for astronomy outreach nights: it measures temperature,
+humidity, and pressure, warns when dew is likely, logs everything, and sends
+readings to mrshudson so anyone on the home network can see recent
+conditions. It grows across three versions, each built inside the regular
+weeks. This page describes the goal; progress is tracked in those weeks.
+
+* Version 1: standalone logger (week 24)
+
+- Reads temperature, humidity, and pressure from a BME280 at a chosen interval.
+- Shows the current readings on an SSD1306 OLED.
+- Appends timestamped readings to a CSV file on a microSD card.
+- Handles a disconnected or misbehaving sensor: shows an error, keeps
+  running, and recovers when the sensor returns.
+- Rejects impossible values and counts errors.
+
+Built on a breadboard with MicroPython, from weeks 20–23.
+
+* Version 2: networked (week 25, moved to protoboard in week 28)
+
+- The Pico 2 W sends each reading over Wi-Fi to a small HTTP service on
+  mrshudson that you write.
+- mrshudson stores readings (SQLite on the bakerstreet drive is a good fit)
+  and serves a page with the last 24 hours.
+- Dew point is calculated with the Magnus formula, and the page shows a
+  warning when the temperature is within 2–3 °C of the dew point.
+- While the server or Wi-Fi is down, the Pico buffers readings on the SD card
+  and sends them later.
+- The mrshudson service runs under systemd and survives reboots.
+
+Each device has one job: the Pico measures, mrshudson stores and presents.
+
+* Version 3: your own PCB (weeks 29–32)
+
+- The same circuit on a two-layer board you designed in KiCad, with the Pico
+  and modules in sockets.
+- The sensor sits away from the Pico and regulator to keep its readings true.
+- Brought up in stages and run for 24 hours.
+
+* What it can and can't tell you
+
+Temperature, humidity, pressure, and dew point tell you when optics will fog
+and whether conditions are changing. They don't tell you whether the sky is
+clear, how transparent it is, or how steady the seeing will be. Those depend
+on clouds and on the atmosphere well above the ground.
+
+* Ideas for later
+
+- A battery and an enclosure, using the week 26 current budget.
+- A sky-quality sensor or an infrared thermometer pointed up (a cold sky
+  reading suggests clear skies).
+- Several monitors around a site, all reporting to the same mrshudson page.

@@ -1,0 +1,171 @@
+#+TITLE: Phase 8: Computer hardware from first principles
+#+TODO: TODO DOING | DONE SKIPPED
+
+Weeks 33–36. By the end you can explain how logic gates combine into
+arithmetic, memory, and a processor that runs instructions. You build them
+yourself in the Nand2Tetris hardware simulator, starting from nothing but a
+NAND gate. This phase fits well during the wait for your PCB.
+
+Four weeks is an introduction. Finishing Nand2Tetris Part I (projects 1–6) is
+the natural next goal after this plan.
+
+* TODO Week 33: Boolean logic and gates from NAND
+:PROPERTIES:
+:WEEK: 33
+:CUSTOM_ID: week-33
+:END:
+** Learn
+Every digital circuit can be built from one kind of gate: NAND. Starting
+there, you build NOT, AND, OR, XOR, multiplexers, and demultiplexers, each
+from the ones before. You describe them in a simple hardware description
+language (HDL) and test them against truth tables in the simulator. It's
+the same idea as building up a program from small functions, except the
+functions are wires.
+
+- [[https://www.nand2tetris.org/course][Nand2Tetris course]]: project 1 (Boolean logic) and its lecture
+- [[https://www.nand2tetris.org/software][Nand2Tetris software]]: the hardware simulator (the online IDE works too)
+- [[https://www.coursera.org/learn/build-a-computer][Nand2Tetris Part I on Coursera]] (free to audit), week 1 videos
+** Build [0/5]
+- [ ] Install the hardware simulator, or open the online IDE, and run a provided test
+- [ ] Build Not, And, Or, and Xor from Nand, passing each test
+- [ ] Build Mux and DMux
+- [ ] Build the 16-bit and multi-way versions (Not16, And16, Mux4Way16, and so on)
+- [ ] Write a short note on which chip took longest and why
+** Parts
+- None (software only)
+** Checkpoint
+How would you make an AND gate from NAND gates alone, and why does it take two?
+#+begin_details
+#+html: <summary>Check your answer</summary>
+NAND is AND followed by NOT. Feed both inputs into one NAND, then invert its
+output with a second NAND whose two inputs are tied together, which makes it
+a NOT. NOT(NAND(a, b)) = AND(a, b), so it takes two gates.
+#+end_details
+** Notes
+*** Expected
+*** Measured
+*** Different and why
+*** Next
+
+* TODO Week 34: Combinational logic and the ALU
+:PROPERTIES:
+:WEEK: 34
+:CUSTOM_ID: week-34
+:END:
+** Learn
+Binary addition is built from gates: a half adder adds two bits, a full adder
+handles a carry in, and a chain of full adders adds whole numbers. Negative
+numbers use two's complement, so the same adder also subtracts. The ALU
+(arithmetic logic unit) combines these with a few control bits that choose
+the operation. It's the part of the CPU that computes.
+
+- [[https://www.nand2tetris.org/course][Nand2Tetris course]]: project 2 (Boolean arithmetic) and its lecture
+- Coursera Nand2Tetris Part I, week 2 videos
+** Build [0/5]
+- [ ] Build HalfAdder and FullAdder
+- [ ] Build Add16 and Inc16
+- [ ] Build the ALU and pass its test script
+- [ ] Work three two's complement examples by hand (including a negative result) and check them in the simulator
+- [ ] Explain in your notes how the ALU's control bits produce subtraction
+** Parts
+- None (software only)
+** Checkpoint
+In 16-bit two's complement, how is −1 represented, and what happens when you
+add 1 to it?
+#+begin_details
+#+html: <summary>Check your answer</summary>
+−1 is all ones: 1111 1111 1111 1111. Adding 1 carries through every bit,
+leaving all zeros with a carry out of the top bit that's discarded. So the
+result is 0, as expected, using the same adder as unsigned addition.
+#+end_details
+** Notes
+*** Expected
+*** Measured
+*** Different and why
+*** Next
+
+* TODO Week 35: Sequential logic and memory
+:PROPERTIES:
+:WEEK: 35
+:CUSTOM_ID: week-35
+:END:
+** Learn
+Combinational circuits forget: their outputs depend only on current inputs.
+Adding a clock and a flip-flop gives a circuit memory: its output now depends
+on what happened last cycle. From a data flip-flop you build a 1-bit
+register, then 16-bit registers, then RAM in growing sizes, and a program
+counter. This is the hardware behind every variable you've ever stored.
+
+- [[https://www.nand2tetris.org/course][Nand2Tetris course]]: project 3 (memory) and its lecture
+- Coursera Nand2Tetris Part I, week 3 videos
+- Optional: [[https://eater.net/8bit][Ben Eater's 8-bit breadboard computer]], the clock and register videos, to see the same ideas in real chips
+** Build [0/5]
+- [ ] Build Bit and Register from the provided DFF
+- [ ] Build RAM8, then RAM64
+- [ ] Build RAM512 through RAM16K
+- [ ] Build the program counter (PC) with load, increment, and reset
+- [ ] Explain in your notes why the clock is what makes memory possible
+** Parts
+- None (software only)
+** Checkpoint
+Why can't you build memory from combinational logic alone?
+#+begin_details
+#+html: <summary>Check your answer</summary>
+A combinational circuit's output is a pure function of its current inputs. It
+has nowhere to keep a value after the inputs change. Memory needs feedback
+plus a clock that decides when to sample: the flip-flop holds its value
+between clock edges, regardless of what the inputs do in between.
+#+end_details
+** Notes
+*** Expected
+*** Measured
+*** Different and why
+*** Next
+
+* TODO Week 36: The CPU and instruction execution
+:PROPERTIES:
+:WEEK: 36
+:CUSTOM_ID: week-36
+:END:
+** Learn
+The Hack CPU combines the ALU, registers, and program counter. Each clock
+cycle it fetches an instruction from ROM, decodes its bits into control
+signals, computes with the ALU, writes the result to a register or memory,
+and picks the next instruction (the next one in order, or a jump). Writing a
+few programs in Hack assembly first (project 4) makes the CPU design obvious.
+Building the CPU (project 5) completes a working computer.
+
+- [[https://www.nand2tetris.org/course][Nand2Tetris course]]: projects 4 (machine language) and 5 (computer architecture)
+- Coursera Nand2Tetris Part I, weeks 4 and 5 videos
+** Build [0/5]
+- [ ] Write the multiplication program in Hack assembly (project 4) and run it in the CPU emulator
+- [ ] Build the Memory chip (RAM, screen, and keyboard mapping)
+- [ ] Build the CPU and pass its test
+- [ ] Build the Computer chip and run a provided program on it
+- [ ] Trace one instruction through your CPU in your notes, from fetch to result
+** Parts
+- None (software only)
+** Checkpoint
+Trace the instruction =D=D+A= through the CPU: where does it come from, what
+changes inside, and where does the result go?
+#+begin_details
+#+html: <summary>Check your answer</summary>
+1. The PC holds the instruction's address, and ROM outputs the 16-bit
+   instruction.
+2. The top bit marks it as a C-instruction. The computation bits select D + A
+   in the ALU, with the D register and the A register as inputs.
+3. The destination bits enable a write to D only. On the clock edge, D takes
+   the ALU's output.
+4. There are no jump bits, so the PC increments to the next instruction.
+#+end_details
+** Notes
+*** Expected
+*** Measured
+*** Different and why
+*** Next
+
+* Phase review
+- Can you build any logic function from NAND gates?
+- Can you explain how a chain of full adders adds and subtracts numbers?
+- Can you explain how a clock and flip-flops make memory?
+- Can you trace an instruction through a CPU from fetch to write-back?
