@@ -62,4 +62,31 @@
     (should (string-match-p "Parts" errors))
     (should (string-match-p "details" errors))))
 
+(ert-deftest hp-dashboard-shows-progress ()
+  (let ((html (hp-dashboard-html (list (hp-phase-summary (hp-test-fixture "phase-sample.org"))))))
+    (should (string-match-p "1 of 2 weeks" html))
+    (should (string-match-p "phase-sample.html#week-02" html))
+    (should (string-match-p "Build and measure the divider" html))
+    (should (string-match-p "Current week" html))))
+
+(ert-deftest hp-dashboard-complete ()
+  (let ((html (hp-dashboard-html
+               (list (list :file "/x/01-a.org" :title "Phase 1" :done 1 :total 1
+                           :weeks (list '(:file "/x/01-a.org" :title "Week 1: A" :week 1
+                                          :id "week-01" :state "DONE"
+                                          :build-done 1 :build-total 1 :next-item nil)))))))
+    (should (string-match-p "Plan complete" html))
+    (should-not (string-match-p "Current week" html))))
+
+(ert-deftest hp-dashboard-escapes ()
+  (let ((html (hp-dashboard-html
+               (list (list :file "/x/01-a.org" :title "A & <B> \"C\"" :done 0 :total 1
+                           :weeks (list '(:file "/x/01-a.org" :title "Week 1: x < y" :week 1
+                                          :id "week-01" :state "TODO"
+                                          :build-done 0 :build-total 1 :next-item "Use R & C")))))))
+    (should (string-match-p (regexp-quote "A &amp; &lt;B&gt; &quot;C&quot;") html))
+    (should (string-match-p (regexp-quote "Week 1: x &lt; y") html))
+    (should (string-match-p (regexp-quote "Use R &amp; C") html))
+    (should-not (string-match-p (regexp-quote "<B>") html))))
+
 ;;; hp-test.el ends here

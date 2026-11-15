@@ -1,0 +1,161 @@
+/* Hardware Path: one stylesheet for the dashboard and the phase pages. */
+
+:root {
+  --bg: #fbfaf7;
+  --surface: #ffffff;
+  --text: #1f2328;
+  --muted: #5f6670;
+  --border: #e3e0d8;
+  --accent: #0f6e5f;
+  --accent-soft: #d9efe9;
+  --todo: #b3541e;
+  --done: #2c7a3f;
+  --code-bg: #f2efe8;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #15171a;
+    --surface: #1d2024;
+    --text: #e6e3dc;
+    --muted: #9aa1a9;
+    --border: #2f3338;
+    --accent: #4fc2ac;
+    --accent-soft: #1d3a35;
+    --todo: #f0945c;
+    --done: #6ccf86;
+    --code-bg: #24282d;
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 17px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+}
+
+#content, main, #preamble, #postamble {
+  max-width: 72ch;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+#content, main { padding-bottom: 2rem; }
+
+a { color: var(--accent); }
+
+h1, h2, h3, h4 { line-height: 1.25; }
+h1.title, header h1 { margin: 1.5rem 0 0.25rem; font-size: 2rem; }
+
+code, pre, kbd {
+  font-family: ui-monospace, "JetBrains Mono", Menlo, Consolas, monospace;
+  font-size: 0.9em;
+  background: var(--code-bg);
+  border-radius: 4px;
+}
+code { padding: 0.1em 0.3em; }
+pre { padding: 0.75rem 1rem; overflow-x: auto; border: 1px solid var(--border); }
+
+table { border-collapse: collapse; width: 100%; margin: 1rem 0; display: block; overflow-x: auto; }
+th, td { border: 1px solid var(--border); padding: 0.4rem 0.6rem; text-align: left; vertical-align: top; }
+th { background: var(--code-bg); }
+
+/* Navigation */
+nav.top { padding: 0.75rem 0; font-size: 0.95rem; }
+#postamble { border-top: 1px solid var(--border); margin-top: 2rem; }
+
+/* Table of contents */
+#table-of-contents {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  margin: 1rem 0 2rem;
+}
+#table-of-contents h2 { font-size: 1rem; margin: 0.5rem 0; }
+#table-of-contents ul { padding-left: 1.2rem; margin: 0.25rem 0; }
+#table-of-contents ul ul { display: none; }
+
+/* Weeks */
+.outline-2 {
+  border-top: 2px solid var(--border);
+  margin-top: 2.5rem;
+  padding-top: 0.5rem;
+}
+.todo, .done {
+  font-size: 0.75em;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 0.15em 0.45em;
+  border-radius: 4px;
+  vertical-align: 0.15em;
+  margin-right: 0.3em;
+}
+.todo { color: var(--todo); border: 1px solid var(--todo); }
+.done { color: var(--done); border: 1px solid var(--done); }
+.SKIPPED { opacity: 0.7; }
+
+/* Checkbox lists */
+li.on, li.off, li.trans { list-style: none; margin-left: -1.3rem; }
+li input[type="checkbox"] { margin-right: 0.45rem; accent-color: var(--accent); }
+li.on code, li.on { color: var(--muted); }
+
+/* Checkpoint answers */
+details {
+  background: var(--accent-soft);
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  margin: 0.75rem 0;
+}
+details summary { cursor: pointer; font-weight: 600; color: var(--accent); }
+details[open] summary { margin-bottom: 0.5rem; }
+
+/* Dashboard */
+.dashboard header nav { margin: 0.5rem 0 1rem; }
+.lede { color: var(--muted); margin: 0; }
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  margin: 1rem 0;
+}
+.card h2 {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin: 0 0 0.5rem;
+}
+.big { font-size: 1.8rem; font-weight: 700; margin: 0 0 0.5rem; }
+.muted { color: var(--muted); margin: 0.4rem 0 0; font-size: 0.95rem; }
+.week-title { font-size: 1.25rem; font-weight: 600; margin: 0; }
+.next { margin: 0.75rem 0 0; }
+.next span { font-weight: 700; }
+
+.bar {
+  height: 10px;
+  background: var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.bar span { display: block; height: 100%; background: var(--accent); border-radius: 999px; }
+
+.phases ol { list-style: none; padding: 0; margin: 0; }
+.phases li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.25rem 0.75rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.phases li:last-child { border-bottom: 0; }
+.phases li .bar { grid-column: 1 / -1; grid-row: 2; height: 6px; }
+.phases .count { color: var(--muted); font-variant-numeric: tabular-nums; }

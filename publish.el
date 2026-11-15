@@ -6,6 +6,8 @@
 
 (require 'org)
 (require 'org-element)
+(require 'ox-html)
+(require 'ox-publish)
 (require 'cl-lib)
 (require 'subr-x)
 
@@ -203,5 +205,112 @@ Skipped weeks are left out of :total."
     (if failed
         (kill-emacs 1)
       (message "OK: %d phase files" (length files)))))
+
+;;; Dashboard
+
+(defun hp--esc (text)
+  "Escape TEXT for HTML."
+  (let ((s (or text "")))
+    (dolist (pair '(("&" . "&amp;") ("<" . "&lt;") (">" . "&gt;") ("\"" . "&quot;")) s)
+      (setq s (string-replace (car pair) (cdr pair) s)))))
+
+(defun hp--page (file)
+  "Return the HTML page name published from Org FILE."
+  (concat (file-name-base file) ".html"))
+
+(defun hp--percent (done total)
+  "Return DONE as a whole percentage of TOTAL."
+  (if (> total 0) (round (* 100.0 (/ (float done) total))) 0))
+
+(defun hp--bar (done total)
+  "Return a progress bar for DONE of TOTAL."
+  (let ((pct (hp--percent done total)))
+    (format "<div class=\"bar\" role=\"progressbar\" aria-valuenow=\"%d\" aria-valuemin=\"0\" aria-valuemax=\"100\"><span style=\"width:%d%%\"></span></div>"
+            pct pct)))
+
+(defun hp-dashboard-html (phases)
+  "Return the dashboard page for PHASES, a list of `hp-phase-summary' plists."
+  (let* ((done (apply #'+ (mapcar (lambda (p) (plist-get p :done)) phases)))
+         (total (apply #'+ (mapcar (lambda (p) (plist-get p :total)) phases)))
+         (weeks (mapcan (lambda (p) (copy-sequence (plist-get p :weeks))) phases))
+         (current (hp-current-week weeks))
+         (phase-of (lambda (w)
+                     (cl-find (plist-get w :file) phases
+                              :key (lambda (p) (plist-get p :file)) :test #'equal))))
+    (concat
+     "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n"
+     "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n"
+     "<title>Hardware Path</title>\n<link rel=\"stylesheet\" href=\"style.css\">\n</head>\n"
+     "<body class=\"dashboard\">\n<main>\n"
+     "<header><h1>Hardware Path</h1>"
+     "<p class=\"lede\">A 36-week path from Ohm's law to a self-designed PCB and a CPU built from NAND gates.</p>"
+     "<nav><a href=\"00-start-here.html\">Start here</a> · <a href=\"09-capstone.html\">Capstone</a></nav></header>\n"
+     (format "<section class=\"card overall\"><h2>Progress</h2><p class=\"big\">%d of %d weeks</p>%s<p class=\"muted\">%d%% complete</p></section>\n"
+             done total (hp--bar done total) (hp--percent done total))
+     (if current
+         (let ((phase (funcall phase-of current)))
+           (format (concat "<section class=\"card current\"><h2>Current week</h2>"
+                           "<p class=\"week-title\"><a href=\"%s#%s\">%s</a></p>"
+                           "<p class=\"muted\">%s · build %d/%d</p>"
+                           "<p class=\"next\"><span>Next:</span> %s</p></section>\n")
+                   (hp--page (plist-get current :file)) (hp--esc (plist-get current :id))
+                   (hp--esc (plist-get current :title))
+                   (hp--esc (plist-get phase :title))
+                   (plist-get current :build-done) (plist-get current :build-total)
+                   (hp--esc (hp-next-action current))))
+       "<section class=\"card current\"><h2>Plan complete</h2><p>Every week is done. Next goal: finish Nand2Tetris Part I.</p></section>\n")
+     "<section class=\"card phases\"><h2>Phases</h2><ol>\n"
+     (mapconcat
+      (lambda (p)
+        (format "<li><a href=\"%s\">%s</a>%s<span class=\"count\">%d/%d</span></li>\n"
+                (hp--page (plist-get p :file)) (hp--esc (plist-get p :title))
+                (hp--bar (plist-get p :done) (plist-get p :total))
+                (plist-get p :done) (plist-get p :total)))
+      phases "")
+     "</ol></section>\n</main>\n</body>\n</html>\n")))
+
+;;; Publishing
+
+(defun hp--project-alist ()
+  "Return the `org-publish-project-alist' for the site."
+  (let ((nav "<nav class=\"top\"><a href=\"index.html\">← Dashboard</a></nav>"))
+    `(("hp-org"
+       :base-directory ,hp-plan-dir
+       :base-extension "org"
+       :publishing-directory ,hp-site-dir
+       :publishing-function org-html-publish-to-html
+       :with-toc t
+       :section-numbers nil
+       :with-todo-keywords t
+       :with-author nil
+       :time-stamp-file nil
+       :html-doctype "html5"
+       :html-html5-fancy t
+       :html-checkbox-type html
+       :html-head-include-default-style nil
+       :html-head-include-scripts nil
+       :html-head "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n<link rel=\"stylesheet\" href=\"style.css\">"
+       :html-preamble ,nav
+       :html-postamble ,nav)
+      ("hp-assets"
+       :base-directory "assets/"
+       :base-extension "css"
+       :publishing-directory ,hp-site-dir
+       :publishing-function org-publish-attachment)
+      ("hp" :components ("hp-org" "hp-assets")))))
+
+(defun hp-build-site ()
+  "Publish the plan to `hp-site-dir' and write the dashboard."
+  (let ((org-publish-project-alist (hp--project-alist))
+        (org-publish-use-timestamps-flag nil)
+        (org-publish-timestamp-directory (make-temp-file "hp-timestamps" t))
+        (org-export-use-babel nil)
+        (org-html-htmlize-output-type nil)
+        (make-backup-files nil))
+    (make-directory hp-site-dir t)
+    (org-publish "hp" t)
+    (with-temp-file (expand-file-name "index.html" hp-site-dir)
+      (insert (hp-dashboard-html (mapcar #'hp-phase-summary (hp-phase-files)))))
+    (message "Site written to %s" hp-site-dir)))
 
 ;;; publish.el ends here
