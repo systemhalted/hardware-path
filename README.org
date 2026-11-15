@@ -4,7 +4,7 @@ A 36-week, project-based path into hardware engineering, tracked in Org.
 It runs from Ohm's law, through microcontrollers and embedded C, to a PCB
 designed in KiCad and a CPU built from NAND gates.
 
-The site is at https://systemhalted.github.io/hardware-path/ and is rebuilt
+The site is at https://systemhalted.in/hardware-path/ and is rebuilt
 from the Org files on every push.
 
 * Layout
