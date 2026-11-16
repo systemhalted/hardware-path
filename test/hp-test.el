@@ -69,6 +69,14 @@
     (should (string-match-p "Build and measure the divider" html))
     (should (string-match-p "Current week" html))))
 
+(ert-deftest hp-dashboard-lists-this-weeks-work ()
+  (let ((html (hp-dashboard-html (list (hp-phase-summary (hp-test-fixture "phase-sample.org"))))))
+    (should (string-match-p (regexp-quote "<a href=\"https://example.com/divider\">Divider guide</a>") html))
+    (should (string-match-p "Predict the divider output on paper" html))
+    (should (string-match-p "Swap one resistor and explain" html))
+    (should-not (string-match-p "More framing" html))
+    (should-not (string-match-p "Map the breadboard" html))))
+
 (ert-deftest hp-dashboard-complete ()
   (let ((html (hp-dashboard-html
                (list (list :file "/x/01-a.org" :title "Phase 1" :done 1 :total 1

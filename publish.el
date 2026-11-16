@@ -89,10 +89,19 @@
 
 ;;; Progress
 
+(defun hp--section-lists (headline)
+  "Return the plain lists directly under HEADLINE as Org text, or nil.
+Framing paragraphs are left out."
+  (when-let* ((section (car (org-element-contents headline)))
+              ((eq (org-element-type section) 'section))
+              (lists (cl-remove-if-not (lambda (e) (eq (org-element-type e) 'plain-list))
+                                       (org-element-contents section))))
+    (mapconcat #'org-element-interpret-data lists "")))
+
 (defun hp-collect-weeks (file)
   "Return a plist for each week in FILE.
 Keys: :file :title :week :id :state :optional :build-done :build-total
-:next-item."
+:next-item :learn :build (the last two are Org text of the sections' lists)."
   (mapcar
    (lambda (h)
      (let ((boxes (hp--checkboxes (hp--child h "Build"))))
@@ -104,7 +113,9 @@ Keys: :file :title :week :id :state :optional :build-done :build-total
              :optional (equal (org-element-property :OPTIONAL h) "t")
              :build-done (cl-count-if #'cdr boxes)
              :build-total (length boxes)
-             :next-item (car (cl-find-if-not #'cdr boxes)))))
+             :next-item (car (cl-find-if-not #'cdr boxes))
+             :learn (when-let* ((s (hp--child h "Learn"))) (hp--section-lists s))
+             :build (when-let* ((s (hp--child h "Build"))) (hp--section-lists s)))))
    (hp--weeks (hp--parse file))))
 
 (defun hp-phase-summary (file)
@@ -258,6 +269,21 @@ week still counts as not done."
     (format "<div class=\"bar\" role=\"progressbar\" aria-valuenow=\"%d\" aria-valuemin=\"0\" aria-valuemax=\"100\"><span style=\"width:%d%%\"></span></div>"
             pct pct)))
 
+(defun hp--org-html (org)
+  "Return ORG text exported as an HTML fragment."
+  (let ((org-html-checkbox-type 'html)
+        (org-export-with-toc nil)
+        (org-export-with-section-numbers nil))
+    (org-export-string-as org 'html t)))
+
+(defun hp--week-work-html (week)
+  "Return WEEK's Learn and Build lists as dashboard HTML."
+  (concat
+   (when-let* ((learn (plist-get week :learn)))
+     (concat "<h3>Learn</h3>" (hp--org-html learn)))
+   (when-let* ((build (plist-get week :build)))
+     (concat "<h3>Build</h3>" (hp--org-html build)))))
+
 (defun hp-dashboard-html (phases)
   "Return the dashboard page for PHASES, a list of `hp-phase-summary' plists."
   (let* ((done (apply #'+ (mapcar (lambda (p) (plist-get p :done)) phases)))
@@ -282,12 +308,13 @@ week still counts as not done."
            (format (concat "<section class=\"card current\"><h2>Current week</h2>"
                            "<p class=\"week-title\"><a href=\"%s#%s\">%s</a></p>"
                            "<p class=\"muted\">%s · build %d/%d</p>"
-                           "<p class=\"next\"><span>Next:</span> %s</p></section>\n")
+                           "<p class=\"next\"><span>Next:</span> %s</p>%s</section>\n")
                    (hp--page (plist-get current :file)) (hp--esc (plist-get current :id))
                    (hp--esc (plist-get current :title))
                    (hp--esc (plist-get phase :title))
                    (plist-get current :build-done) (plist-get current :build-total)
-                   (hp--esc (hp-next-action current))))
+                   (hp--esc (hp-next-action current))
+                   (hp--week-work-html current)))
        "<section class=\"card current\"><h2>Plan complete</h2><p>Every week is done. Next goal: finish Nand2Tetris Part I.</p></section>\n")
      "<section class=\"card phases\"><h2>Phases</h2><ol>\n"
      (mapconcat

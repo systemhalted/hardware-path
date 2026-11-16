@@ -159,3 +159,8 @@ details[open] summary { margin-bottom: 0.5rem; }
 .phases li:last-child { border-bottom: 0; }
 .phases li .bar { grid-column: 1 / -1; grid-row: 2; height: 6px; }
 .phases .count { color: var(--muted); font-variant-numeric: tabular-nums; }
+
+/* This week's work on the dashboard */
+.current h3 { font-size: 1rem; margin: 1rem 0 0.25rem; }
+.current ul { margin: 0; padding-left: 1.3rem; }
+.current input[type="checkbox"] { pointer-events: none; }
