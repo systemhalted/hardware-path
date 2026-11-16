@@ -140,6 +140,7 @@ technically correct threshold can still behave badly.
 
 - Wikipedia: [[https://en.wikipedia.org/wiki/Schmitt_trigger][Schmitt trigger]] (the first two sections, for the idea)
 - Your week 12 log, to see the size of the noise
+- Watch: MIT 6.002 [[https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/resources/lecture-21/][lecture 21, Op amps positive feedback]] (how positive feedback makes a Schmitt trigger)
 ** Build [0/5]
 - [ ] Make a night light with one threshold and watch it chatter near the boundary (cover the LDR slowly)
 - [ ] Measure the noise band from your logs and choose on and off levels wider than it

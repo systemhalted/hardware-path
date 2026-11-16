@@ -19,7 +19,9 @@ every push, so the files always win.
 - Tick build items as you go (=C-c C-c= on a checkbox). The =[/]= counter on
   each =Build= heading updates itself.
 - Write your notes under the week's =Notes= heading. Short is fine.
-- Commit and push. The dashboard updates in a minute or two.
+- Commit and push. The dashboard updates in a minute or two, and shows the
+  current week's reading and build checklist, so it is the place to start
+  each session.
 - From your phone, the GitHub mobile app can edit a file and commit it, which
   is enough for ticking a box or jotting a note at the bench.
 
@@ -93,6 +95,6 @@ the tools, in the order you need them:
 
 - Charles Platt, /Make: Electronics/ (3rd edition). Hands-on, experiment-led.
 - Paul Scherz and Simon Monk, /Practical Electronics for Inventors/. The reference to look things up in.
-- [[https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/][MIT OCW 6.002 Circuits and Electronics]]. Undergraduate theory, used as a reference.
+- [[https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/video_galleries/video-lectures/][MIT OCW 6.002 Circuits and Electronics video lectures]] (Anant Agarwal). Undergraduate theory. The weeks that pair with a lecture link it under Learn.
 - [[https://learn.sparkfun.com/tutorials][SparkFun tutorials]]. Short, practical explainers.
 - [[https://www.nand2tetris.org/][Nand2Tetris]]. Phase 8.

@@ -25,6 +25,8 @@ you how long a battery lasts.
 - SparkFun: [[https://learn.sparkfun.com/tutorials/capacitors][Capacitors]] (the decoupling application section)
 - SparkFun: [[https://learn.sparkfun.com/tutorials/battery-technologies][Battery technologies]]
 - SparkFun: [[https://learn.sparkfun.com/tutorials/how-to-power-a-project][How to power a project]]
+- Watch: MIT 6.002 [[https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/resources/lecture-22/][lecture 22, Energy and power]]
+- Watch: MIT 6.002 [[https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/resources/lecture-23/][lecture 23, Energy, CMOS]] (why a lower clock saves power)
 ** Build [0/5]
 - [ ] Measure the capstone's current draw with the meter in series: idle, sensor reading, SD write, and Wi-Fi transmit
 - [ ] Write a current budget table and estimate how long 3×AA cells (about 2000 mAh) would run it

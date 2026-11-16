@@ -21,6 +21,8 @@ which holes are connected saves hours of debugging.
 - SparkFun: [[https://learn.sparkfun.com/tutorials/how-to-use-a-breadboard][How to use a breadboard]]
 - SparkFun: [[https://learn.sparkfun.com/tutorials/how-to-use-a-multimeter][How to use a multimeter]]
 - Platt, /Make: Electronics/, chapter 1
+- Watch: MIT 6.002 [[https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/resources/lecture-1/][lecture 1, Introduction and lumped abstraction]]
+- Watch: MIT 6.002 [[https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/resources/lecture-2/][lecture 2, Basic circuit analysis method]]
 ** Build [0/5]
 - [ ] Draw the breadboard's internal connections from memory, then check them with the meter's continuity mode
 - [ ] Read five resistors' color codes, write down the values, then measure them
@@ -62,6 +64,7 @@ R = (V_supply − V_forward) / I_desired.
 - SparkFun: [[https://learn.sparkfun.com/tutorials/light-emitting-diodes-leds][Light-emitting diodes]]
 - SparkFun: [[https://learn.sparkfun.com/tutorials/diodes][Diodes]]
 - Platt, /Make: Electronics/, the LED experiments in chapter 1
+- Watch: MIT 6.002 [[https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/resources/lecture-6/][lecture 6, Nonlinear analysis]] (diodes as nonlinear parts; the math is optional)
 ** Build [0/5]
 - [ ] Calculate a resistor for a red LED at about 10 mA from 3.3 V, and pick the nearest standard value at or above it
 - [ ] Build the circuit and confirm the LED lights; then reverse the LED and note what happens
@@ -102,7 +105,7 @@ also teach the idea of loading: what you connect to the output changes it.
 
 - SparkFun: [[https://learn.sparkfun.com/tutorials/series-and-parallel-circuits][Series and parallel circuits]]
 - SparkFun: [[https://learn.sparkfun.com/tutorials/voltage-dividers][Voltage dividers]]
-- MIT 6.002, lecture 2 (basic circuit analysis), as a deeper reference
+- Watch: MIT 6.002 [[https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/resources/lecture-3/][lecture 3, Superposition, Thévenin and Norton]]
 ** Build [0/5]
 - [ ] Put three resistors in series, predict the total resistance, then measure it
 - [ ] Put the same three in parallel, predict, then measure

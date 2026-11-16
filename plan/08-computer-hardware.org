@@ -99,6 +99,7 @@ counter. This is the hardware behind every variable you've ever stored.
 - [[https://www.nand2tetris.org/course][Nand2Tetris course]]: project 3 (memory) and its lecture
 - Coursera Nand2Tetris Part I, week 3 videos
 - Optional: [[https://eater.net/8bit][Ben Eater's 8-bit breadboard computer]], the clock and register videos, to see the same ideas in real chips
+- Watch: MIT 6.002 [[https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/resources/lecture-14/][lecture 14, State and memory]] (optional: memory seen from the circuit side)
 ** Build [0/5]
 - [ ] Build Bit and Register from the provided DFF
 - [ ] Build RAM8, then RAM64

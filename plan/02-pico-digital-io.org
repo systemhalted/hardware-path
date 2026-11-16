@@ -65,6 +65,7 @@ the plan.
 - [[https://datasheets.raspberrypi.com/picow/pico-2-w-datasheet.pdf][Pico 2 W datasheet]]: the pinout and power sections
 - [[https://datasheets.raspberrypi.com/rp2350/rp2350-datasheet.pdf][RP2350 datasheet]]: search for "drive strength" in the GPIO chapter and the electrical specifications table
 - SparkFun: [[https://learn.sparkfun.com/tutorials/logic-levels][Logic levels]]
+- Watch: MIT 6.002 [[https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/resources/lecture-4/][lecture 4, The digital abstraction]] (logic levels and noise margins)
 ** Build [0/5]
 - [ ] Find the GPIO output drive-strength options and the default in the RP2350 datasheet; write them in your notes
 - [ ] Connect an external LED with a resistor to a GPIO pin and blink it from code
@@ -110,6 +111,7 @@ transistor somewhere.
 - SparkFun: [[https://learn.sparkfun.com/tutorials/transistors][Transistors]] (focus on "Applications I: switches")
 - Platt, /Make: Electronics/, the transistor experiments
 - Search a MOSFET datasheet for "V_GS(th)" and for the gate voltages R_DS(on) is specified at. The threshold is where the MOSFET barely starts to conduct; only an R_DS(on) figure at 2.5 V or 3.3 V guarantees it is fully on from a Pico pin. The popular IRLZ44N, for example, is only specified from 4 V up
+- Watch: MIT 6.002 [[https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/resources/lecture-5/][lecture 5, Inside the digital gate]] (the MOSFET as a switch)
 ** Build [0/5]
 - [ ] Switch an LED through an NPN transistor (2N2222 or BC547) from a GPIO pin; calculate the base resistor first
 - [ ] Measure the voltage across the transistor (collector to emitter) when on, and explain what "saturated" means from that number
@@ -158,6 +160,7 @@ changes for a short time) fixes it.
 - SparkFun: [[https://learn.sparkfun.com/tutorials/pull-up-resistors][Pull-up resistors]]
 - Jack Ganssle: [[https://www.ganssle.com/debouncing.htm][A guide to debouncing]] (part 1 is enough for now)
 - [[https://docs.micropython.org/en/latest/rp2/quickref.html][MicroPython RP2 quick reference]]: the =Pin= section on =PULL_UP=
+- Watch: MIT 6.002 [[https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/resources/lecture-12/][lecture 12, Capacitors and first-order systems]] (the RC time constant behind a hardware debounce)
 ** Build [0/5]
 - [ ] Read an input pin with nothing connected, printing its value in a loop, and watch it float when you touch the wire
 - [ ] Wire a button to ground and use the internal pull-up; confirm pressed reads 0 and released reads 1

@@ -70,6 +70,7 @@ traces of 0.5 mm or more are comfortable.
 
 - [[https://docs.kicad.org/][KiCad documentation]]: "Getting Started in KiCad", the PCB editor chapters
 - [[https://www.youtube.com/@PhilsLab][Phil's Lab]]: his PCB layout and grounding videos
+- Watch: MIT 6.002 [[https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/resources/lecture-25/][lecture 25, Violating the abstraction barrier]] (optional: the parasitics that layout has to respect)
 ** Build [0/6]
 - [ ] Set the board outline (around 70 × 50 mm) and add four mounting holes
 - [ ] Place the Pico with its antenna end at the board edge, and add a keep-out zone (no copper on any layer) under and around the antenna as the Pico 2 W datasheet specifies
