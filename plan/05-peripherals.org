@@ -150,21 +150,27 @@ UART is the oldest of the three: two wires (TX to the other side's RX, and
 the reverse), no clock, and both sides agreeing on a baud rate in advance.
 It's how many GPS modules and debug consoles talk, and how two boards can
 exchange data with almost no setup. The Debug Probe's UART gives the laptop a
-serial port. The Raspberry Pi 3B (mrshudson) has a 3.3 V UART on its GPIO
-header, so the two boards can be wired directly with a shared ground.
+serial port. The first-generation Raspberry Pi Model A (lestrade) has a
+3.3 V UART on its 26-pin header, so it can be wired directly to the Debug
+Probe or the Pico with a shared ground. Lestrade has no network port, so its
+serial console is also the easiest way to log in to it without a monitor.
+Use lestrade rather than mrshudson: wiring experiments belong on a spare
+board, not the home server.
 
 - SparkFun: [[https://learn.sparkfun.com/tutorials/serial-communication][Serial communication]]
 - [[https://docs.micropython.org/en/latest/library/machine.UART.html][MicroPython =machine.UART=]]
 - Raspberry Pi: [[https://www.raspberrypi.com/documentation/computers/configuration.html][Configuration]] (the UART section: enabling the serial port and turning off the login console)
-** Build [0/5]
+** Build [0/6]
 - [ ] Send sensor readings from the Pico's UART0 to the laptop through the Debug Probe and read them with =minicom=
 - [ ] Capture a few bytes on the logic analyzer and decode them; find the start and stop bits
 - [ ] Set the wrong baud rate on one side and describe what you receive
-- [ ] Optional: wire the Pico to mrshudson's GPIO14/15 (TX/RX crossed, grounds joined) and read lines with Python on the Pi
+- [ ] Optional: connect the Debug Probe's UART to lestrade (header pin 8 is TX, pin 10 is RX, pin 6 is ground; crossed, grounds joined), boot it, and watch its boot messages in =minicom= at 115200 baud, then log in over serial. Raspberry Pi OS needs =enable_uart=1= in =config.txt= first. Never connect header pins 2 or 4: they carry 5 V
+- [ ] Optional: turn off lestrade's serial login console, wire the Pico's UART0 to lestrade's TX/RX instead, and read the Pico's lines with Python (=pyserial= on =/dev/serial0=). Predict first: what does lestrade receive if the Pico starts sending before lestrade has finished booting?
 - [ ] Define a simple line format (e.g. =T=21.4,H=56.2=) and parse it on the receiving side
 ** Parts
 - Debug Probe (UART port), logic analyzer
-- Female-to-female jumpers if you connect to mrshudson
+- Female-to-female jumpers for lestrade's header
+- Optional: lestrade (Raspberry Pi Model A) with its power supply and SD card
 ** Checkpoint
 Why do you connect TX to RX (crossed), and why must the grounds be connected
 even though no "ground signal" is sent?
