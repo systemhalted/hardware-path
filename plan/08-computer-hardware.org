@@ -25,6 +25,9 @@ functions are wires.
 - [[https://www.nand2tetris.org/course][Nand2Tetris course]]: project 1 (Boolean logic) and its lecture
 - [[https://www.nand2tetris.org/software][Nand2Tetris software]]: the hardware simulator (the online IDE works too)
 - [[https://www.coursera.org/learn/build-a-computer][Nand2Tetris Part I on Coursera]] (free to audit), week 1 videos
+- Platt, /Make: Electronics/, the logic gate experiments in the chips chapter
+- Deeper: /The Art of Electronics/ §10.1, Basic logic concepts, and §10.2, Digital integrated circuits: CMOS and Bipolar (TTL)
+- Watch: MIT 6.002 [[https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/resources/lecture-5/][lecture 5, Inside the digital gate]] (optional revisit: a gate built from MOSFETs)
 ** Build [0/5]
 - [ ] Install the hardware simulator, or open the online IDE, and run a provided test
 - [ ] Build Not, And, Or, and Xor from Nand, passing each test
@@ -61,6 +64,7 @@ the operation. It's the part of the CPU that computes.
 
 - [[https://www.nand2tetris.org/course][Nand2Tetris course]]: project 2 (Boolean arithmetic) and its lecture
 - Coursera Nand2Tetris Part I, week 2 videos
+- Deeper: /The Art of Electronics/ §10.3, Combinational logic
 ** Build [0/5]
 - [ ] Build HalfAdder and FullAdder
 - [ ] Build Add16 and Inc16
@@ -100,6 +104,7 @@ counter. This is the hardware behind every variable you've ever stored.
 - Coursera Nand2Tetris Part I, week 3 videos
 - Optional: [[https://eater.net/8bit][Ben Eater's 8-bit breadboard computer]], the clock and register videos, to see the same ideas in real chips
 - Watch: MIT 6.002 [[https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/resources/lecture-14/][lecture 14, State and memory]] (optional: memory seen from the circuit side)
+- Deeper: /The Art of Electronics/ §10.4, Sequential logic, and §14.4, Memory types
 ** Build [0/5]
 - [ ] Build Bit and Register from the provided DFF
 - [ ] Build RAM8, then RAM64
@@ -138,6 +143,7 @@ Building the CPU (project 5) completes a working computer.
 
 - [[https://www.nand2tetris.org/course][Nand2Tetris course]]: projects 4 (machine language) and 5 (computer architecture)
 - Coursera Nand2Tetris Part I, weeks 4 and 5 videos
+- Deeper: /The Art of Electronics/ §14.1, Computer architecture: CPU and data bus, and §14.2, A computer instruction set
 ** Build [0/5]
 - [ ] Write the multiplication program in Hack assembly (project 4) and run it in the CPU emulator
 - [ ] Build the Memory chip (RAM, screen, and keyboard mapping)

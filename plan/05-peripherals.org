@@ -23,6 +23,7 @@ need to do.
 
 - Bosch: [[https://www.bosch-sensortec.com/products/environmental-sensors/humidity-sensors-bme280/][BME280 product page]] (download the datasheet from here)
 - Becky Stern: [[https://beckystern.com/2025/10/28/how-to-read-a-datasheet/][How to read a datasheet]] (article and video)
+- Deeper: /The Art of Electronics/ §15.8, Peripheral ICs for microcontrollers
 ** Build [0/5]
 - [ ] From the BME280 datasheet, write down the supply range, typical current, I²C addresses, and the accuracy of temperature and humidity
 - [ ] Find the absolute maximum ratings and explain how they differ from operating conditions
@@ -67,6 +68,7 @@ over time, and PulseView's I²C decoder turns the waveform into "write to
 - SparkFun: [[https://learn.sparkfun.com/tutorials/i2c][I²C]]
 - [[https://docs.micropython.org/en/latest/library/machine.I2C.html][MicroPython =machine.I2C=]]
 - [[https://sigrok.org/wiki/PulseView][PulseView]] and its [[https://sigrok.org/wiki/Protocol_decoder:I2c][I²C decoder]]
+- Deeper: /The Art of Electronics/ §14.7, Serial buses and data links (I²C), and §12.2, An aside: probing digital signals
 ** Build [0/6]
 - [ ] Wire the BME280 to I²C0 and run =i2c.scan()=; confirm the address matches the datasheet
 - [ ] Read the chip ID register (0xD0) by hand with =readfrom_mem= and check it's 0x60
@@ -115,6 +117,8 @@ log store for the capstone.
 - SparkFun: [[https://learn.sparkfun.com/tutorials/serial-peripheral-interface-spi][Serial Peripheral Interface]]
 - [[https://docs.micropython.org/en/latest/library/machine.SPI.html][MicroPython =machine.SPI=]]
 - micropython-lib: [[https://github.com/micropython/micropython-lib/tree/master/micropython/drivers/storage/sdcard][SD card driver]]
+- Deeper: /The Art of Electronics/ §14.7, Serial buses and data links (SPI), and §12.9, Digital signals and long wires
+- Watch: MIT 6.002 [[https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/resources/lecture-13/][lecture 13, Digital circuit speed]] (optional: why wire capacitance limits clock speed)
 ** Build [0/5]
 - [ ] Wire a 3.3 V-compatible microSD breakout to SPI0 and mount the card with the =sdcard= driver
 - [ ] Write a text file, unplug, and read it on your laptop
@@ -160,6 +164,7 @@ board, not the home server.
 - SparkFun: [[https://learn.sparkfun.com/tutorials/serial-communication][Serial communication]]
 - [[https://docs.micropython.org/en/latest/library/machine.UART.html][MicroPython =machine.UART=]]
 - Raspberry Pi: [[https://www.raspberrypi.com/documentation/computers/configuration.html][Configuration]] (the UART section: enabling the serial port and turning off the login console)
+- Deeper: /The Art of Electronics/ §14.7, Serial buses and data links (serial ports)
 ** Build [0/6]
 - [ ] Send sensor readings from the Pico's UART0 to the laptop through the Debug Probe and read them with =minicom=
 - [ ] Capture a few bytes on the logic analyzer and decode them; find the start and stop bits
@@ -203,6 +208,7 @@ StarFest conditions monitor.
 - Your week 20–22 notes
 - The capstone page, for the v1 requirements
 - Bosch BME280 datasheet: the section on self-heating and recommended modes for weather monitoring
+- Deeper: /The Art of Electronics/ §13.1, Some preliminaries (sampling), and §15.6, Design example 4: thermal controller
 ** Build [0/6]
 - [ ] Capstone v1: read temperature, humidity, and pressure at a chosen interval
 - [ ] Capstone v1: show the current readings on the OLED
@@ -249,6 +255,7 @@ new part is the device on the other end being unreliable.
 - [[https://datasheets.raspberrypi.com/picow/connecting-to-the-internet-with-pico-w.pdf][Connecting to the internet with Raspberry Pi Pico W-series]] (PDF)
 - [[https://docs.micropython.org/en/latest/library/network.WLAN.html][MicroPython =network.WLAN=]]
 - Wikipedia: [[https://en.wikipedia.org/wiki/Dew_point][Dew point]] (the Magnus formula section)
+- Deeper: /The Art of Electronics/ §14.5, Other buses and data links: overview
 ** Build [0/6]
 - [ ] Connect the Pico to your Wi-Fi and print its IP address; reconnect automatically after the router restarts
 - [ ] Capstone v2: write a small HTTP service on mrshudson that accepts JSON readings and stores them (SQLite on bakerstreet is a good choice)

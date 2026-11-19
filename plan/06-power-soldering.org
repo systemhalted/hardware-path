@@ -27,6 +27,7 @@ you how long a battery lasts.
 - SparkFun: [[https://learn.sparkfun.com/tutorials/how-to-power-a-project][How to power a project]]
 - Watch: MIT 6.002 [[https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/resources/lecture-22/][lecture 22, Energy and power]]
 - Watch: MIT 6.002 [[https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/resources/lecture-23/][lecture 23, Energy, CMOS]] (why a lower clock saves power)
+- Deeper: /The Art of Electronics/ §9.3, Fully integrated linear regulators, §9.4, Heat and power design, and §9.12, Energy storage: batteries and capacitors
 ** Build [0/5]
 - [ ] Measure the capstone's current draw with the meter in series: idle, sensor reading, SD write, and Wi-Fi transmit
 - [ ] Write a current budget table and estimate how long 3×AA cells (about 2000 mAh) would run it
@@ -66,6 +67,7 @@ cheaply.
 - Adafruit: [[https://learn.adafruit.com/adafruit-guide-excellent-soldering][Adafruit guide to excellent soldering]] (the common problems page is the most useful)
 - SparkFun: [[https://learn.sparkfun.com/tutorials/how-to-solder-through-hole-soldering][How to solder: through-hole soldering]]
 - [[https://pine64.org/devices/pinecil/][Pinecil]] soldering iron
+- Platt, /Make: Electronics/, the soldering experiments in "Getting Somewhat More Serious"
 ** Build [0/5]
 - [ ] Set up a ventilated space, tip cleaner, flux, and safety glasses
 - [ ] Solder a through-hole practice kit (any small kit with 20 or more joints)
@@ -107,6 +109,7 @@ Socket the Pico in female headers so you can reuse it.
 
 - Your capstone v1/v2 schematic (update it first if it drifted on the breadboard)
 - Adafruit soldering guide, for reference
+- Platt, /Make: Electronics/, "Getting Somewhat More Serious" (moving a circuit onto perforated board)
 ** Build [0/5]
 - [ ] Draw the final capstone schematic, including power, decoupling capacitors, and pull-ups if needed
 - [ ] Plan the protoboard layout on paper (or squared paper) before cutting or soldering anything

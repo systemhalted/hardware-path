@@ -22,6 +22,7 @@ perfect first analog input.
 - SparkFun: [[https://learn.sparkfun.com/tutorials/analog-to-digital-conversion][Analog-to-digital conversion]]
 - [[https://docs.micropython.org/en/latest/library/machine.ADC.html][MicroPython =machine.ADC=]]
 - [[https://datasheets.raspberrypi.com/picow/pico-2-w-datasheet.pdf][Pico 2 W datasheet]]: which pins are ADC inputs (GP26–GP28) and how ADC_VREF is generated
+- Deeper: /The Art of Electronics/ §13.1, Some preliminaries, and §13.7, Successive approximation (the kind of ADC in the Pico)
 ** Build [0/5]
 - [ ] Wire a 10 kΩ potentiometer as a divider between 3V3 and GND, with the wiper on GP26
 - [ ] Print the raw reading and the calculated voltage as you turn the knob
@@ -61,6 +62,8 @@ the pulse *width* (about 1–2 ms, repeated every 20 ms) encodes a position.
 - SparkFun: [[https://learn.sparkfun.com/tutorials/pulse-width-modulation][Pulse width modulation]]
 - [[https://docs.micropython.org/en/latest/library/machine.PWM.html][MicroPython =machine.PWM=]]
 - SparkFun: [[https://learn.sparkfun.com/tutorials/hobby-servo-tutorial][Hobby servo tutorial]]
+- Deeper: /The Art of Electronics/ §13.2, Digital-to-analog converters (PWM as a simple DAC)
+- Watch: MIT 6.002 [[https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/resources/lecture-18/][lecture 18, Filters]] (optional: why an RC low-pass turns PWM into a steady voltage)
 ** Build [0/5]
 - [ ] Fade an LED with PWM, using the potentiometer from week 10 to set the duty cycle
 - [ ] Measure the pin with the meter on DC volts at 25%, 50%, and 75% duty; explain the readings
@@ -100,6 +103,7 @@ tell apart, which is your week 3 knowledge doing real work.
 
 - SparkFun: [[https://learn.sparkfun.com/tutorials/photocell-hookup-guide][Photocell hookup guide]]
 - SparkFun: [[https://learn.sparkfun.com/tutorials/voltage-dividers][Voltage dividers]] (review)
+- Deeper: /The Art of Electronics/ §12.6, Optoelectronics: detectors
 ** Build [0/5]
 - [ ] Measure the LDR's resistance in room light, under your hand, and under a phone flashlight
 - [ ] Choose a fixed resistor so room light lands near the middle of the ADC range; show the calculation
@@ -141,6 +145,7 @@ technically correct threshold can still behave badly.
 - Wikipedia: [[https://en.wikipedia.org/wiki/Schmitt_trigger][Schmitt trigger]] (the first two sections, for the idea)
 - Your week 12 log, to see the size of the noise
 - Watch: MIT 6.002 [[https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/resources/lecture-21/][lecture 21, Op amps positive feedback]] (how positive feedback makes a Schmitt trigger)
+- Deeper: /The Art of Electronics/ §12.3, Comparators (hysteresis), and §8.1, "Noise"
 ** Build [0/5]
 - [ ] Make a night light with one threshold and watch it chatter near the boundary (cover the LDR slowly)
 - [ ] Measure the noise band from your logs and choose on and off levels wider than it

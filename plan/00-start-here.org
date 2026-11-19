@@ -93,7 +93,8 @@ the tools, in the order you need them:
 
 * Books and courses used throughout
 
-- Charles Platt, /Make: Electronics/ (3rd edition). Hands-on, experiment-led.
+- Charles Platt, /Make: Electronics/ (3rd edition). Hands-on, experiment-led. Experiment numbers differ between editions, so the weeks name the topic or chapter; find it in your edition's table of contents. Also on O'Reilly Learning.
+- Paul Horowitz and Winfield Hill, /The Art of Electronics/ (3rd edition). The deep reference: dense and written for engineering students, so read it after the week's introduction, not instead of it. Weeks list its sections as "Deeper".
 - Paul Scherz and Simon Monk, /Practical Electronics for Inventors/. The reference to look things up in.
 - [[https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/video_galleries/video-lectures/][MIT OCW 6.002 Circuits and Electronics video lectures]] (Anant Agarwal). Undergraduate theory. The weeks that pair with a lecture link it under Learn.
 - [[https://learn.sparkfun.com/tutorials][SparkFun tutorials]]. Short, practical explainers.

@@ -23,6 +23,7 @@ through the =pico_cyw43_arch= library.
 - [[https://datasheets.raspberrypi.com/pico/getting-started-with-pico.pdf][Getting started with Raspberry Pi Pico-series]] (PDF): the manual setup chapter
 - [[https://github.com/raspberrypi/pico-examples][pico-examples]] on GitHub: =blink= and =pico_w/wifi/blink=
 - On Arch: =arm-none-eabi-gcc=, =arm-none-eabi-newlib=, =cmake=, and =picotool= packages
+- Deeper: /The Art of Electronics/ §15.9, Development environment
 ** Build [0/5]
 - [ ] Install the toolchain and clone =pico-sdk= (with submodules) and =pico-examples=
 - [ ] Build =pico-examples= for =PICO_BOARD=pico2_w= and flash the Wi-Fi blink example via BOOTSEL
@@ -104,6 +105,7 @@ serial port, so you can see output without USB stdio.
 - Raspberry Pi: [[https://www.raspberrypi.com/documentation/microcontrollers/debug-probe.html][Debug Probe documentation]]
 - [[https://datasheets.raspberrypi.com/pico/getting-started-with-pico.pdf][Getting started with Pico-series]] (PDF): the debugging chapter (OpenOCD and GDB)
 - Memfault Interrupt: [[https://interrupt.memfault.com/blog/gdb-for-firmware-1][GDB for firmware]]
+- Deeper: /The Art of Electronics/ §15.9, Development environment (debugging)
 ** Build [0/5]
 - [ ] Connect the Debug Probe to the Pico's SWD header and flash your week 15 program with OpenOCD
 - [ ] Set a breakpoint on the button handler, press the button, and inspect local variables
@@ -145,6 +147,7 @@ interrupts. Variables shared between the two need =volatile= (and care).
 - [[https://www.raspberrypi.com/documentation/pico-sdk/hardware.html][Pico SDK hardware APIs]]: =hardware_gpio= (=gpio_set_irq_enabled_with_callback=) and =hardware_irq=
 - [[https://www.raspberrypi.com/documentation/pico-sdk/high_level.html][Pico SDK high-level APIs]]: =pico_time= (=add_repeating_timer_ms=)
 - [[https://github.com/raspberrypi/pico-examples][pico-examples]]: =gpio/hello_gpio_irq= and =timer/timer_lowlevel=
+- Deeper: /The Art of Electronics/ §14.1, Computer architecture: CPU and data bus (interrupts)
 ** Build [0/5]
 - [ ] Replace the polled button with a GPIO interrupt that sets a flag; handle the flag in the main loop
 - [ ] Blink an LED from a repeating timer while the main loop does something else
@@ -187,6 +190,7 @@ behavior easy to reason about and to test.
 
 - Memfault Interrupt: [[https://interrupt.memfault.com/blog/zero-to-main-1][From zero to main()]] (what happens before =main=)
 - Your build's =.map= file (add =pico_add_extra_outputs= in CMake)
+- Deeper: /The Art of Electronics/ §14.2, A computer instruction set, and §14.4, Memory types
 ** Build [0/5]
 - [ ] Find a global, a static, a local, and a =const= table in your map file or with GDB, and note which region each is in
 - [ ] Rebuild the week 9 reaction game in C as a state machine (waiting, ready, go, result, false start)

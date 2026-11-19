@@ -23,6 +23,7 @@ each one can be set high (3.3 V) or low (0 V), or read as an input.
 - [[https://datasheets.raspberrypi.com/pico/raspberry-pi-pico-python-sdk.pdf][Raspberry Pi Pico Python SDK]] (PDF), chapters 1–3
 - [[https://docs.micropython.org/en/latest/rp2/quickref.html][MicroPython quick reference for the RP2]]
 - [[https://thonny.org/][Thonny]] editor, or =mpremote= from the command line
+- Deeper: /The Art of Electronics/ §15.1, Microcontrollers: introduction
 ** Build [0/5]
 - [ ] Flash the MicroPython UF2 for the Pico 2 W by holding BOOTSEL while plugging in
 - [ ] Open a REPL (Thonny or =mpremote=) and turn the onboard LED on and off by hand with =machine.Pin("LED", machine.Pin.OUT)=
@@ -66,6 +67,7 @@ the plan.
 - [[https://datasheets.raspberrypi.com/rp2350/rp2350-datasheet.pdf][RP2350 datasheet]]: search for "drive strength" in the GPIO chapter and the electrical specifications table
 - SparkFun: [[https://learn.sparkfun.com/tutorials/logic-levels][Logic levels]]
 - Watch: MIT 6.002 [[https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/resources/lecture-4/][lecture 4, The digital abstraction]] (logic levels and noise margins)
+- Deeper: /The Art of Electronics/ §12.1, CMOS and TTL logic interfacing, and §12.4, Driving external digital loads from logic levels
 ** Build [0/5]
 - [ ] Find the GPIO output drive-strength options and the default in the RP2350 datasheet; write them in your notes
 - [ ] Connect an external LED with a resistor to a GPIO pin and blink it from code
@@ -112,6 +114,7 @@ transistor somewhere.
 - Platt, /Make: Electronics/, the transistor experiments
 - Search a MOSFET datasheet for "V_GS(th)" and for the gate voltages R_DS(on) is specified at. The threshold is where the MOSFET barely starts to conduct; only an R_DS(on) figure at 2.5 V or 3.3 V guarantees it is fully on from a Pico pin. The popular IRLZ44N, for example, is only specified from 4 V up
 - Watch: MIT 6.002 [[https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/resources/lecture-5/][lecture 5, Inside the digital gate]] (the MOSFET as a switch)
+- Deeper: /The Art of Electronics/ §2.2, Some basic transistor circuits (the transistor switch), §3.4, FET switches, and §3.5, Power MOSFETs
 ** Build [0/5]
 - [ ] Switch an LED through an NPN transistor (2N2222 or BC547) from a GPIO pin; calculate the base resistor first
 - [ ] Measure the voltage across the transistor (collector to emitter) when on, and explain what "saturated" means from that number
@@ -161,6 +164,8 @@ changes for a short time) fixes it.
 - Jack Ganssle: [[https://www.ganssle.com/debouncing.htm][A guide to debouncing]] (part 1 is enough for now)
 - [[https://docs.micropython.org/en/latest/rp2/quickref.html][MicroPython RP2 quick reference]]: the =Pin= section on =PULL_UP=
 - Watch: MIT 6.002 [[https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/resources/lecture-12/][lecture 12, Capacitors and first-order systems]] (the RC time constant behind a hardware debounce)
+- Platt, /Make: Electronics/, "Time and Capacitors" (the RC delay behind a hardware debounce)
+- Deeper: /The Art of Electronics/ §12.1 (input thresholds), and §10.4, Sequential logic (look for switch debouncing)
 ** Build [0/5]
 - [ ] Read an input pin with nothing connected, printing its value in a loop, and watch it float when you touch the wire
 - [ ] Wire a button to ground and use the internal pull-up; confirm pressed reads 0 and released reads 1
@@ -200,6 +205,8 @@ the same idea as an event loop in software, made visible by the hardware.
 
 - [[https://docs.micropython.org/en/latest/library/time.html][MicroPython =time= module]]: =ticks_ms=, =ticks_diff=, and why they wrap
 - Use your week 8 notes on debouncing
+- Platt, /Make: Electronics/, the reflex tester in the chips chapter (the same game built from logic chips)
+- Deeper: /The Art of Electronics/ §10.4, Sequential logic
 ** Build [0/5]
 - [ ] Sketch the game's states (waiting, get ready, go, result) and transitions on paper first
 - [ ] After a random delay, light the LED; measure the time until the button press, and print it
